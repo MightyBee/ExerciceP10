@@ -13,6 +13,10 @@ void TextViewer::dessine(Ressort const& r){
   sortie << r << endl;
 }
 
+void TextViewer::dessine(Chariot const& c){
+  sortie << c << endl;
+}
+
 void TextViewer::dessine(Systeme const& sys){
   sortie << sys << endl;
 

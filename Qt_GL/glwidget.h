@@ -19,6 +19,7 @@ public:
   {}
   virtual ~GLWidget() {}
   void add(Oscillateur const& osc);
+  void initializeSysteme(){s.initialize();}
 private:
   // Les 3 méthodes clés de la classe QGLWidget à réimplémenter
   virtual void initializeGL()                  override;

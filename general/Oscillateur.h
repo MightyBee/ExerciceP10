@@ -60,7 +60,7 @@ public:
   //autres opérations
   virtual Vecteur f(const double& t) const override;
   virtual Vecteur3D position() const override;
-  double get_L() const;
+  double get_L() const{return L;}
   virtual double get_angleNutation(bool degre=false) const override;
   virtual double get_angleRotPro(bool degre=false) const override;
   virtual std::ostream& affiche(std::ostream& sortie) const override; // permet permet d'afficher le vecteur par composants sur un flot de sortie
@@ -96,6 +96,42 @@ private:
   double k;
   double m;
   double frott;
+};
+
+class Chariot :public Oscillateur{
+public:
+  explicit Chariot(const std::initializer_list<double>& liP={0,0},
+                   const std::initializer_list<double>& liQ={0,0},
+                   const Vecteur3D& a=Vecteur3D(1,0,0),
+                   const Vecteur3D& O=Vecteur3D(0,0,0),
+                   double raideur=1, double masseRessort=1, double frottRessort=0,
+                   double longueur=1, double massePendule=1, double frottPendule=0,
+                   SupportADessin* support=nullptr);
+  virtual ~Chariot(){}
+  std::unique_ptr<Chariot> clone() const;
+  virtual std::unique_ptr<Oscillateur> copie() const override;
+  virtual void dessine() const override;
+
+  virtual Vecteur f(const double& t) const override;
+  Vecteur3D posC()const; // position du chariot
+  virtual Vecteur3D position()const override; //position du pendule
+  double get_L() const{return L;}
+  double get_x() const{return P.get_coord(1);}
+  virtual double get_angleNutation(bool degre=false) const override;
+  virtual double get_angleRotPro(bool degre=false) const override;
+  virtual std::ostream& affiche(std::ostream& sortie) const override; // permet permet d'afficher le vecteur par composants sur un flot de sortie
+
+
+private:
+  //chariot (ressort)
+  double frott1;
+  double m1;
+  double k;
+  //pendule
+  double frott2;
+  double m2;
+  double L;
+
 };
 
 //simon

@@ -156,7 +156,6 @@ Vecteur3D Pendule::position() const {
   return retour;
 }
 
-double Pendule::get_L() const{return L;}
 
 double Pendule::get_angleNutation(bool degre) const{
   double angle(P.get_coord(1));
@@ -240,5 +239,90 @@ ostream& Ressort::affiche(ostream& sortie) const{
   sortie << P << " # parametre (distance de l'origine)" << endl;
   sortie << Q << " # vitesse" << endl;
   sortie << position() << "# position" << endl;
+  return sortie;
+}
+
+/*##############################################################################
+###                                                                          ###
+###                    METHODES DE LA CLASSE Chariot                         ###
+###                                                                          ###
+##############################################################################*/
+
+Chariot::Chariot(const initializer_list<double>& liP,
+                 const initializer_list<double>& liQ,
+                 const Vecteur3D& a, const Vecteur3D& O,
+                 double raideur, double masseRessort, double frottRessort,
+                 double longueur, double massePendule, double frottPendule,
+                 SupportADessin* support)
+                 : Oscillateur(liP,liQ,a,O,support),  //TODO ERREUR
+                 k(raideur), m1(masseRessort), frott1(frottRessort),
+                 L(longueur), m2(massePendule), frott2(frottPendule)
+                 {if(a*g!=0){
+                    Erreur err("initialisation Chariot", "Chariot::Chariot(const initializer_list<double>&, const initializer_list<double>&, const Vecteur3D&, const Vecteur3D&, double, double, double, double, double, doubel, SupportADessin*)",
+                               "L'axe du chariot doit être orthogonal au vecteur g.");
+                    throw err;
+                  }
+                 }
+
+  unique_ptr<Chariot> Chariot::clone() const{
+   return unique_ptr<Chariot>(new Chariot(*this));
+  }
+
+  unique_ptr<Oscillateur> Chariot::copie() const{
+    return clone();
+  }
+
+  void Chariot::dessine() const{
+    if(support!=nullptr){
+      support->dessine(*this);
+    }
+  }
+
+
+Vecteur Chariot::f(const double& t) const {
+  Vecteur retour (2);
+  double P1(P.get_coord(1));
+  double P2(P.get_coord(2));
+  double Q1(Q.get_coord(1));
+  double Q2(Q.get_coord(2));
+
+  double A(m1+m2*pow(sin(P2), 2));
+  double B(k*P1 + frott1* Q1 - m2*L*Q2*Q2*sin(P2));
+  double C(g.norme()*sin(P2) + frott2*Q2);
+
+  retour.set_coord(1, 1.0/A*(-B+m2*C*cos(P2)));
+  retour.set_coord(2, 1.0/A*((B*cos(P2)-(m1+m2)*C)/L));
+
+  return retour;
+}
+
+Vecteur3D Chariot::posC()const{
+  Vecteur3D retour(O+P.get_coord(1)*a);
+  return retour;
+}
+
+Vecteur3D Chariot::position()const{
+  Vecteur3D retour(posC()+L*sin(P.get_coord(2))*a+L*cos(P.get_coord(2))*(~g));
+  return retour;
+}
+
+double Chariot::get_angleNutation(bool degre) const {
+  double angle(P.get_coord(2));
+  if(degre){angle*=180.0/M_PI;}
+  return angle;
+}
+
+double Chariot::get_angleRotPro(bool degre) const {
+  double angle(0);
+  if(degre){angle*=180.0/M_PI;}
+  return angle;
+}
+
+ostream& Chariot::affiche(std::ostream& sortie) const {
+  sortie << "# Chariot :" << endl;
+  sortie << P << " # parametre (distance de l'origine du chariot et angle du pendule)" << endl;
+  sortie << Q << " # vitesse (vitesse chariot et vitesse angulaire du pendule)" << endl;
+  sortie << posC() << "# position chariot" << endl;
+  sortie << position() << "# position pendule" << endl;
   return sortie;
 }
