@@ -261,6 +261,7 @@ Vecteur3D Vecteur3D::projXY() const{
 	return Vecteur3D(x(),y(),0);
 }
 
+// retourne l'angle en valeur absolue entre deux vecteur //
 double Vecteur3D::angle(Vecteur3D const& v2) const{
 	double angle(0);
 	Vecteur3D V1(~(*this));

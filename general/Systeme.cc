@@ -25,7 +25,7 @@ void Systeme::initialize(){
           add(Ressort({1},{0},{-1,2,-1},{0,0,0},2,1));
           add(Chariot({0,0},{4,0},{1,-2,0},{-1,-1,0},100,10,0,1,1,0));
         }
-        cout << endl << "Lancement de la simulation !" << endl; 
+        cout << endl << "Lancement de la simulation !" << endl;
         break;
       case 1 :
       {
@@ -127,7 +127,7 @@ void Systeme::add(Oscillateur const& osc){
 
 void Systeme::evolue(double dt){
   for(auto& osc : collection){
-    integrateur->evolue(*osc, dt);
+    integrateur->evolue(*osc, dt, temps);
   }
   temps+=dt;
 }
