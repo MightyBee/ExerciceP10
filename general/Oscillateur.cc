@@ -54,9 +54,9 @@ void Oscillateur::set_P(const Vecteur& p){
     Erreur r("dimension", "Oscillateur::set_P(const Vecteur&)",
              "La dimension attendue du vecteur passé en paramètre était "+to_string(P.taille())+", et non pas "+to_string(p.taille()));
     throw r;
+  }else{
+    P=p;
   }
-  else{
-    P=p;}
 }
 
 // permet de modifier un paramètre de l'Oscillateur
@@ -74,9 +74,9 @@ void Oscillateur::set_Q(const Vecteur& q){
     Erreur r("dimension", "Oscillateur::set_Q(const Vecteur&)",
              "La dimension attendue du vecteur passé en paramètre était "+to_string(Q.taille())+", et non pas "+to_string(q.taille()));
     throw r;
+  }else{
+    Q=q;
   }
-  else{
-    Q=q;}
 }
 
 // permet de modifier une vitesse de l'Oscillateur

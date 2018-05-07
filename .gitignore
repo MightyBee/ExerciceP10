@@ -1,8 +1,13 @@
 # Ignore all
 *
 
+# Unignore subdirs
+!*/
+# Ignore all in subdirs
+*/**
+
 # Unignore all with extensions
-!*.*
+!**.*
 
 
 # Compiled source #
