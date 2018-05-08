@@ -129,6 +129,11 @@ Pendule::Pendule(const initializer_list<double>& liP,
                                "L'axe du pendule doit être orthogonal au vecteur g.");
                     throw err;
                   }
+                  if(P.taille()!=1){
+                    Erreur err("initialisation Pendule", "Pendule::Pendule(const initializer_list<double>&, const initializer_list<double>&, const Vecteur3D&, const Vecteur3D&, double, double, double, SupportADessin*)",
+                               "Le pendule doit avoir un seul paramètre (et sa dérivée temporelle) : l'angle du pendule (et sa vitesse angulaire). Ici : "+to_string(P.taille())+"paramètre(s).");
+                    throw err;
+                  }
                 } //TODO, question : comment catcher une erreur lancée par le constructeur de Oscillateur ?
 
 unique_ptr<Pendule> Pendule::clone() const{
@@ -191,7 +196,14 @@ Ressort::Ressort(const initializer_list<double>& liP,
                  double raideur,double masse, double frottement,
                  SupportADessin* support)
                   : Oscillateur(liP,liQ,a,O,support)//TODO ERREUR
-                  ,k(raideur), m(masse), frott(frottement){}
+                  ,k(raideur), m(masse), frott(frottement)
+                  {
+                    if(P.taille()!=1){
+                      Erreur err("initialisation Ressort", "Ressort::Ressort(const initializer_list<double>&, const initializer_list<double>&, const Vecteur3D&, const Vecteur3D&, double, double, double, SupportADessin*)",
+                                 "Le ressort doit avoir un seul paramètre (et sa dérivée temporelle) : la distance à la position d'équilibre (et sa vitesse). Ici : "+to_string(P.taille())+"paramètre(s).");
+                      throw err;
+                    }
+                  }
 
 unique_ptr<Ressort> Ressort::clone() const{
   return unique_ptr<Ressort>(new Ressort(*this));
@@ -260,6 +272,11 @@ Chariot::Chariot(const initializer_list<double>& liP,
                  {if(a*g!=0){
                     Erreur err("initialisation Chariot", "Chariot::Chariot(const initializer_list<double>&, const initializer_list<double>&, const Vecteur3D&, const Vecteur3D&, double, double, double, double, double, doubel, SupportADessin*)",
                                "L'axe du chariot doit être orthogonal au vecteur g.");
+                    throw err;
+                  }
+                  if(P.taille()!=2){
+                    Erreur err("initialisation Chariot", "Chariot::Chariot(const initializer_list<double>&, const initializer_list<double>&, const Vecteur3D&, const Vecteur3D&, double, double, double, double, double, doubel, SupportADessin*)",
+                               "Le chariot doit avoir deux paramètres (et leur dérivée temporelle) : la distance du chariot et l'angle du pendule (+dérivées). Ici : "+to_string(P.taille())+"paramètre(s).");
                     throw err;
                   }
                  }
