@@ -66,6 +66,37 @@ void VueOpenGL::dessine(Ressort const& r)
   dessineCube(matrice);
 }
 
+void VueOpenGL::dessine(Chariot const& c){
+  QMatrix4x4 matrice;
+  Vecteur3D O(c.get_O());
+  Vecteur3D posC(c.posC());
+  Vecteur3D posP(c.position());
+
+  // Dessin du ressort
+  prog.setUniformValue("vue_modele", matrice_vue * matrice);
+  glBegin(GL_LINES);
+  prog.setAttributeValue(CouleurId, 1.0, 1.0, 1.0); // blanc
+  prog.setAttributeValue(SommetId, O.x(), O.y(), O.z());
+  prog.setAttributeValue(SommetId, posC.x(), posC.y(), posC.z());
+  prog.setAttributeValue(SommetId, posC.x(), posC.y(), posC.z());
+  prog.setAttributeValue(SommetId, posP.x(), posP.y(), posP.z());
+  glEnd();
+
+
+  // dessin de la masse
+  matrice.translate(O.x(),O.y(),O.z());
+  angleEuler(c.get_anglePrecession(true),0,0,matrice);
+  matrice.translate(0,c.get_x(),0);
+  QMatrix4x4 reference(matrice);
+  matrice.scale(0.15);
+  dessineCube(matrice);
+  matrice=reference;
+  angleEuler(0,c.get_angleNutation(true),0,matrice);
+  matrice.translate(0.0,0.0,-c.get_L());
+  matrice.scale(0.15);
+  dessineCube(matrice);
+}
+
 // ======================================================================
 void VueOpenGL::init()
 {

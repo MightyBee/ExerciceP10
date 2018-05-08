@@ -11,8 +11,9 @@ class Systeme : public Dessinable {
     Systeme(SupportADessin* sup, Integrateur const& integrat, double t=0);
     virtual ~Systeme(){}
     void add(Oscillateur const& osc);          //TODO methode remove ?
+    void initialize();
     void evolue(double dt=0.1);
-    const std::vector<std::unique_ptr<Oscillateur>>& get_col() const;
+    const std::vector<std::unique_ptr<Oscillateur>>& get_col() const {return collection;}
     virtual void dessine() const override;
     std::ostream& affiche(std::ostream& sortie) const; // permet permet d'afficher le systeme sur un flot de sortie
   private:
