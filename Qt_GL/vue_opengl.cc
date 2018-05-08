@@ -151,6 +151,28 @@ void VueOpenGL::dessine(PenduleDouble const& pd)
 
 }
 
+void VueOpenGL::dessine(PenduleRessort const& pr)
+{
+  QMatrix4x4 matrice;
+  Vecteur3D O(pr.get_O());
+  Vecteur3D pos(pr.position());
+
+  // Dessin de la corde
+  prog.setUniformValue("vue_modele", matrice_vue * matrice);
+  glBegin(GL_LINES);
+  prog.setAttributeValue(CouleurId, 1.0, 1.0, 1.0); // blanc
+  prog.setAttributeValue(SommetId, O.x(), O.y(), O.z());
+  prog.setAttributeValue(SommetId, pos.x(), pos.y(), pos.z());
+  glEnd();
+
+  // dessin du pendule (masse)
+  matrice.translate(O.x(),O.y(),O.z());
+  angleEuler(pr.get_anglePrecession(true),pr.get_angleNutation(true),0,matrice);
+  matrice.translate(0.0,0.0,-pr.get_L());
+  matrice.scale(0.15);
+  dessineCube(matrice);
+}
+
 // ======================================================================
 void VueOpenGL::init()
 {

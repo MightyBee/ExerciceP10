@@ -4,7 +4,7 @@
 
 int main(int argc, char* argv[]){
   QApplication a(argc, argv);
-//  try{
+  try{
 
 
 
@@ -18,17 +18,19 @@ int main(int argc, char* argv[]){
     //Chariot c({0,0},{4,0},{1,-2,0},{-1,-1,0},100,10,0,1,1,0);
     GLWidget w(rk);
     //w.initializeSysteme();
-    w.add(PenduleDouble({3.14,3.14}));
-    w.add(PenduleDouble({3.14,3.14},{0,0},{1,0,0},{0,-1,0},1,1,10));
+    //w.add(PenduleDouble({3.14,3.14}));
+    //w.add(PenduleDouble({1.5,1.5},{0,0},{1,0,0},{0,1,0},1,1,10,2));
+    w.add(PenduleRessort({2,1},{0,0},{2,1,0},{0,0,0},0.5,1,10));
     //w.add(p1);
     //w.add(p2);
     //w.add(r);
     //w.add(c);
     w.show();
-//  } catch(Erreur err){
-//    err.affiche("main_qt_gl.cc");
-//  }
-  return a.exec();
+    return a.exec();
+  } catch(Erreur err){
+    err.affiche("main_qt_gl.cc");
+  }
+
 }
 
 // TODO, question : que mettre dans le bloc try ? tout ? ou moins ?

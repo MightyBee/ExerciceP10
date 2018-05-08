@@ -12,6 +12,7 @@ class TextViewer : public SupportADessin {
     virtual void dessine(Torsion const&) override;
     virtual void dessine(Chariot const&) override;
     virtual void dessine(PenduleDouble const&) override;
+    virtual void dessine(PenduleRessort const&) override;
   private:
     std::ostream& sortie;
 };

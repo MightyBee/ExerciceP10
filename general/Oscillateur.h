@@ -198,21 +198,28 @@ private:
   double L2;
 };
 
-/*
+
 class PenduleRessort : public Oscillateur{
 public:
   //constructeur - destructeur
-  explicit PenduleRessort(const std::initializer_list<double>& liP,
-                          const std::initializer_list<double>& liQ,
+  explicit PenduleRessort(const std::initializer_list<double>& liP={0,0},
+                          const std::initializer_list<double>& liQ={0,0},
                           const Vecteur3D& a=Vecteur3D(1,0,0),
                           const Vecteur3D& O=Vecteur3D(0,0,0),
                           double masse=1.0, double longueur=1.0, double raideur=1.0,
                           SupportADessin* support=nullptr);
   virtual ~PenduleRessort(){}
+  std::unique_ptr<PenduleRessort> clone() const;
+  virtual std::unique_ptr<Oscillateur> copie() const override;
+  virtual void dessine() const override;
   //autres fonctions
   virtual Vecteur f(const double& t) const override;
-  virtual Vecteur3D position() const override; //TODO!
+  virtual Vecteur3D position() const;
+  double get_L() const{return P.norme();}
 
+  virtual double get_angleNutation(bool degre=false) const override;
+  virtual double get_angleRotPro(bool degre=false) const override;
+  virtual std::ostream& affiche(std::ostream& sortie) const override;
 
 private:
   double m;
@@ -222,4 +229,3 @@ private:
 
 
 };
-*/

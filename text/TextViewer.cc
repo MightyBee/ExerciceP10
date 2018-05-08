@@ -28,5 +28,8 @@ void TextViewer::dessine(Chariot const& c){
 
 void TextViewer::dessine(PenduleDouble const& pd){
   sortie << pd << endl;
+}
 
+void TextViewer::dessine(PenduleRessort const& pr){
+  sortie << pr << endl;
 }

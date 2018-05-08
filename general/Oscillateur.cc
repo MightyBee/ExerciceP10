@@ -409,7 +409,7 @@ ostream& PenduleDouble::affiche(ostream& sortie) const{
 ###                    METHODES DE LA CLASSE PenduleRessort                  ###
 ###                                                                          ###
 ##############################################################################*/
-/*
+
 //constructeur
 PenduleRessort::PenduleRessort(const std::initializer_list<double>& liP,
                                const std::initializer_list<double>& liQ,
@@ -420,12 +420,60 @@ PenduleRessort::PenduleRessort(const std::initializer_list<double>& liP,
                                Oscillateur(liP, liQ, a, O, support),
                                m(masse), L(longueur), k(raideur) {}
 
+
+unique_ptr<PenduleRessort> PenduleRessort::clone() const{
+  return unique_ptr<PenduleRessort>(new PenduleRessort(*this));
+}
+
+unique_ptr<Oscillateur> PenduleRessort::copie() const{
+  return clone();
+}
+
+void PenduleRessort::dessine() const{
+  if(support!=nullptr){
+    support->dessine(*this);
+  }
+}
+
 //fonction d'évolution
 Vecteur PenduleRessort::f(const double& t) const{
-  Vecteur retour(g - (k/m)*(1-(L/P.norme()))*P);
+  Vecteur retour(Vecteur({0,g.norme()}) - (k/m)*(1-(L/P.norme()))*P);
   return retour;
 }
-*/
+
+//retourne position d'un pendule
+Vecteur3D PenduleRessort::position() const {
+  Vecteur3D retour(O + P.get_coord(1)*a + P.get_coord(2)*(~g));
+  return retour;
+}
+
+
+double PenduleRessort::get_angleNutation(bool degre) const{
+  double angle(0);
+  double x(P.get_coord(1)), z(-P.get_coord(2));
+  if(x!=0 or z!=0){angle=Vecteur3D(1,0,0).angle({x,0,z});}
+  if(z<0){angle*=-1;}
+  if(degre){angle=angle*180.0/M_PI+90;}
+  else{angle+=0.5*M_PI;}
+  return angle;
+}
+
+double PenduleRessort::get_angleRotPro(bool degre) const{
+  double angle(0);
+  if(degre){angle*=180.0/M_PI;}
+  return angle;
+}
+
+
+// permet l'affichage d'un oscillateur de façon standardisée //
+ostream& PenduleRessort::affiche(ostream& sortie) const{
+  sortie << "# PenduleRessort :" << endl;
+  sortie << P << " # parametre (x et y)" << endl;
+  sortie << Q << " # vitesses" << endl;
+  sortie << position() << "# position" << endl;
+  return sortie;
+}
+
 /*##############################################################################
 ###                                                                          ###
 ###                    METHODES DE LA CLASSE Chariot                         ###
