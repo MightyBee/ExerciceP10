@@ -2,7 +2,8 @@
 *
 
 # Unignore subdirs
-!*/
+!*/*
+
 # Ignore all in subdirs
 */*
 
