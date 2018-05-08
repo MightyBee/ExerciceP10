@@ -99,3 +99,70 @@ private:
 };
 
 //simon
+
+
+class Torsion : public Oscillateur{
+public:
+  //constructeur - destructeur
+  explicit Torsion(const std::initializer_list<double>& liP,
+          const std::initializer_list<double>& liQ,
+          const Vecteur3D& a=Vecteur3D(1,0,0),
+          const Vecteur3D& O=Vecteur3D(0,0,0),
+          double frottement = 0.0,
+          double inertie = 1.0,
+          double C_torsion = 1.0,
+          SupportADessin* support=nullptr);
+  virtual ~Torsion(){}
+  //autres fonctions
+  virtual Vecteur f(const double& t) const override;
+  virtual Vecteur3D position() const override;
+private:
+  double I;
+  double C;
+  double frott;
+};
+
+class PenduleDouble : public Oscillateur{
+public:
+  //constructeur - destructeur
+  explicit PenduleDouble(const std::initializer_list<double>& liP,
+                         const std::initializer_list<double>& liQ,
+                         const Vecteur3D& a=Vecteur3D(1,0,0),
+                         const Vecteur3D& O=Vecteur3D(0,0,0),
+                         double masse1 = 1.0, double longueur1 = 1.0,
+                         double masse2 = 1.0, double longueur2 = 1.0,
+                         SupportADessin* support=nullptr);
+  virtual ~PenduleDouble(){}
+  //autres fonctions
+  virtual Vecteur f(const double& t) const override;
+  virtual Vecteur3D position() const override; //TODO!
+private:
+  double m1;
+  double m2;
+  double L1;
+  double L2;
+};
+
+class PenduleRessort : public Oscillateur{
+public:
+  //constructeur - destructeur
+  explicit PenduleRessort(const std::initializer_list<double>& liP,
+                          const std::initializer_list<double>& liQ,
+                          const Vecteur3D& a=Vecteur3D(1,0,0),
+                          const Vecteur3D& O=Vecteur3D(0,0,0),
+                          double masse=1.0, double longueur=1.0, double raideur=1.0,
+                          SupportADessin* support=nullptr);
+  virtual ~PenduleRessort(){}
+  //autres fonctions
+  virtual Vecteur f(const double& t) const override;
+  virtual Vecteur3D position() const override; //TODO!
+
+
+private:
+  double m;
+  double L;
+  double k;
+
+
+
+};
