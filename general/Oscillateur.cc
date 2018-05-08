@@ -244,6 +244,89 @@ ostream& Ressort::affiche(ostream& sortie) const{
 
 /*##############################################################################
 ###                                                                          ###
+###                    METHODES DE LA CLASSE Torsion                         ###
+###                                                                          ###
+##############################################################################*/
+//constructeur
+Torsion::Torsion(const std::initializer_list<double>& liP,
+        const std::initializer_list<double>& liQ,
+        const Vecteur3D& a,
+        const Vecteur3D& O,
+        SupportADessin* support,
+        double frottement,
+        double inertie,
+        double C_torsion)
+        : Oscillateur(liP,liQ,a,O,support)//TODO ERREUR
+        , frott(frottement), I(inertie), C(C_torsion){}
+
+//fonction d'évolution
+Vecteur Torsion::f(const double& t) const{
+  Vecteur retour({-(C*P.get_coord(1)+ frott*Q.get_coord(1))/I});
+  return retour;
+}
+
+Vecteur3D Torsion::position() const{
+  return O;
+}
+
+/*##############################################################################
+###                                                                          ###
+###                    METHODES DE LA CLASSE PenduleDouble                   ###
+###                                                                          ###
+##############################################################################*/
+//constructeur
+PenduleDouble::PenduleDouble(const std::initializer_list<double>& liP,
+                       const std::initializer_list<double>& liQ,
+                       const Vecteur3D& a,
+                       const Vecteur3D& O,
+                       double masse1, double longueur1,
+                       double masse2, double longueur2,
+                       SupportADessin* support) :
+                       Oscillateur(liP, liQ, a, O, support),
+                       m1(masse1), L1(longueur1),
+                       m2(masse2), L2(longueur2) {}
+
+//fonction d'évolution
+Vecteur PenduleDouble::f(const double& t) const{
+  double M(m1+m2);
+  double theta1(P.get_coord(1));
+  double theta2(P.get_coord(2));
+  double delta(theta1-theta2);
+  double a((m2*g.norme()*cos(delta)*sin(theta2)-M*g.norme()*sin(theta1)
+  -m2*L1*Q.get_coord(1)*Q.get_coord(1)*cos(delta)*sin(delta)
+  -m2*L2*Q.get_coord(2)*Q.get_coord(2)*sin(delta))/(m1*L1+m2*L1*sin(delta)*sin(delta)));
+
+  double b((M*g.norme()*cos(delta)*sin(theta1)-M*g.norme()*sin(theta2)
+  +m2*L2*Q.get_coord(2)*Q.get_coord(2)*cos(delta)*sin(delta)
+  +M*L1*Q.get_coord(1)*Q.get_coord(1)*sin(delta))/(m1*L2+m2*L2*sin(delta)*sin(delta)));
+
+  Vecteur retour({a, b})
+  return retour;
+}
+
+/*##############################################################################
+###                                                                          ###
+###                    METHODES DE LA CLASSE PenduleRessort                  ###
+###                                                                          ###
+##############################################################################*/
+//constructeur
+PenduleRessort::PenduleRessort(const std::initializer_list<double>& liP,
+                               const std::initializer_list<double>& liQ,
+                               const Vecteur3D& a,
+                               const Vecteur3D& O,
+                               double masse, double longueur, double raideur,
+                               SupportADessin* support):
+                               Oscillateur(liP, liQ, a, O, support),
+                               m(masse), L(longueur), k(raideur) {}
+
+//fonction d'évolution
+Vecteur PenduleRessort::f(const double& t) const{
+  Vecteur retour(g - (k/m)*(1-(L/P.norme()))*P);
+  return retour;
+}
+
+################################################################################
+###                                                                          ###
 ###                    METHODES DE LA CLASSE Chariot                         ###
 ###                                                                          ###
 ##############################################################################*/
@@ -326,3 +409,4 @@ ostream& Chariot::affiche(std::ostream& sortie) const {
   sortie << position() << "# position pendule" << endl;
   return sortie;
 }
+
