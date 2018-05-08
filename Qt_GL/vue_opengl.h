@@ -13,10 +13,13 @@
 class VueOpenGL : public SupportADessin {
  public:
   // méthode(s) de dessin (héritée(s) de SupportADessin)
+  virtual void dessine(Systeme const&) override;
   virtual void dessine(Pendule const&) override;
   virtual void dessine(Ressort const&) override;
+  virtual void dessine(Torsion const&) override;
   virtual void dessine(Chariot const&) override;
-  virtual void dessine(Systeme const&) override;
+  virtual void dessine(PenduleDouble const&) override;
+
 
   // méthodes de (ré-)initialisation
   void init();

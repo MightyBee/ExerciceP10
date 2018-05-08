@@ -17,7 +17,9 @@ int main(int argc, char* argv[]){
     //Ressort r({1}, {0}, {-1,2,-1}, {0,0,0}, 2, 1);
     //Chariot c({0,0},{4,0},{1,-2,0},{-1,-1,0},100,10,0,1,1,0);
     GLWidget w(rk);
-    w.initializeSysteme();
+    //w.initializeSysteme();
+    w.add(PenduleDouble({3.14,3.14}));
+    w.add(PenduleDouble({3.14,3.14},{0,0},{1,0,0},{0,-1,0},1,1,10));
     //w.add(p1);
     //w.add(p2);
     //w.add(r);
