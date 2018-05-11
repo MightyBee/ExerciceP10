@@ -66,11 +66,34 @@ void VueOpenGL::dessine(Ressort const& r)
   dessineCube(matrice);
 }
 
+void VueOpenGL::dessine(Torsion const& t)
+{
+  QMatrix4x4 matrice;
+  Vecteur3D O(t.get_O());
+
+  // Dessin de la corde
+  prog.setUniformValue("vue_modele", matrice_vue * matrice);
+  glBegin(GL_LINES);
+  prog.setAttributeValue(CouleurId, 1.0, 1.0, 1.0); // blanc
+  prog.setAttributeValue(SommetId, O.x(), O.y(), O.z()+3);
+  prog.setAttributeValue(SommetId, O.x(), O.y(), O.z());
+  glEnd();
+
+  // dessin du pendule (masse)
+  matrice.translate(O.x(),O.y(),O.z());
+  angleEuler(t.get_anglePrecession(true),t.get_angleNutation(true),t.get_angleRotPro(true),matrice);
+  matrice.scale(0.15);
+  matrice.translate(-1,0,0);
+  dessineCube(matrice);
+  matrice.translate(2,0,0);
+  dessineCube(matrice);
+}
+
 void VueOpenGL::dessine(Chariot const& c){
   QMatrix4x4 matrice;
   Vecteur3D O(c.get_O());
   Vecteur3D posC(c.posC());
-  Vecteur3D posP(c.position());
+  Vecteur3D posP(c.posP());
 
   // Dessin du ressort
   prog.setUniformValue("vue_modele", matrice_vue * matrice);
@@ -82,7 +105,6 @@ void VueOpenGL::dessine(Chariot const& c){
   prog.setAttributeValue(SommetId, posP.x(), posP.y(), posP.z());
   glEnd();
 
-
   // dessin de la masse
   matrice.translate(O.x(),O.y(),O.z());
   angleEuler(c.get_anglePrecession(true),0,0,matrice);
@@ -93,6 +115,60 @@ void VueOpenGL::dessine(Chariot const& c){
   matrice=reference;
   angleEuler(0,c.get_angleNutation(true),0,matrice);
   matrice.translate(0.0,0.0,-c.get_L());
+  matrice.scale(0.15);
+  dessineCube(matrice);
+}
+
+void VueOpenGL::dessine(PenduleDouble const& pd)
+{
+  QMatrix4x4 matrice;
+  Vecteur3D O(pd.get_O());
+  Vecteur3D pos1(pd.pos1());
+  Vecteur3D pos2(pd.pos2());
+
+  // Dessin de la corde
+  prog.setUniformValue("vue_modele", matrice_vue * matrice);
+  glBegin(GL_LINES);
+  prog.setAttributeValue(CouleurId, 1.0, 1.0, 1.0); // blanc
+  prog.setAttributeValue(SommetId, O.x(), O.y(), O.z());
+  prog.setAttributeValue(SommetId, pos1.x(), pos1.y(), pos1.z());
+  prog.setAttributeValue(SommetId, pos1.x(), pos1.y(), pos1.z());
+  prog.setAttributeValue(SommetId, pos2.x(), pos2.y(), pos2.z());
+  glEnd();
+
+  // dessin du pendule (masse)
+  matrice.translate(O.x(),O.y(),O.z());
+  angleEuler(pd.get_anglePrecession(true),pd.get_angleNutation(true),0,matrice);
+  matrice.translate(0.0,0.0,-pd.get_L1());
+  QMatrix4x4 ref(matrice);
+  matrice.scale(0.15);
+  dessineCube(matrice);
+  matrice=ref;
+  angleEuler(0,pd.get_angleNutation2(true),0,matrice);
+  matrice.translate(0.0,0.0,-pd.get_L2());
+  matrice.scale(0.15);
+  dessineCube(matrice);
+
+}
+
+void VueOpenGL::dessine(PenduleRessort const& pr)
+{
+  QMatrix4x4 matrice;
+  Vecteur3D O(pr.get_O());
+  Vecteur3D pos(pr.position());
+
+  // Dessin de la corde
+  prog.setUniformValue("vue_modele", matrice_vue * matrice);
+  glBegin(GL_LINES);
+  prog.setAttributeValue(CouleurId, 1.0, 1.0, 1.0); // blanc
+  prog.setAttributeValue(SommetId, O.x(), O.y(), O.z());
+  prog.setAttributeValue(SommetId, pos.x(), pos.y(), pos.z());
+  glEnd();
+
+  // dessin du pendule (masse)
+  matrice.translate(O.x(),O.y(),O.z());
+  angleEuler(pr.get_anglePrecession(true),pr.get_angleNutation(true),0,matrice);
+  matrice.translate(0.0,0.0,-pr.get_L());
   matrice.scale(0.15);
   dessineCube(matrice);
 }

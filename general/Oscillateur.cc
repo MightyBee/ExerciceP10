@@ -129,6 +129,11 @@ Pendule::Pendule(const initializer_list<double>& liP,
                                "L'axe du pendule doit être orthogonal au vecteur g.");
                     throw err;
                   }
+                  if(P.taille()!=1){
+                    Erreur err("initialisation Pendule", "Pendule::Pendule(const initializer_list<double>&, const initializer_list<double>&, const Vecteur3D&, const Vecteur3D&, double, double, double, SupportADessin*)",
+                               "Le pendule doit avoir un seul paramètre (et sa dérivée temporelle) : l'angle du pendule (et sa vitesse angulaire). Ici : "+to_string(P.taille())+"paramètre(s).");
+                    throw err;
+                  }
                 } //TODO, question : comment catcher une erreur lancée par le constructeur de Oscillateur ?
 
 unique_ptr<Pendule> Pendule::clone() const{
@@ -150,6 +155,7 @@ Vecteur Pendule::f(const double& t) const{
     Vecteur retour({-(g.norme()/L)*sin(P.get_coord(1))-(frott*Q.get_coord(1)/(m*L*L))});
     return retour;
 }
+
 //retourne position d'un pendule
 Vecteur3D Pendule::position() const {
   Vecteur3D retour(O + L*cos(P.get_coord(1))*(~g) + L*sin(P.get_coord(1))*a);
@@ -191,7 +197,14 @@ Ressort::Ressort(const initializer_list<double>& liP,
                  double raideur,double masse, double frottement,
                  SupportADessin* support)
                   : Oscillateur(liP,liQ,a,O,support)//TODO ERREUR
-                  ,k(raideur), m(masse), frott(frottement){}
+                  ,k(raideur), m(masse), frott(frottement)
+                  {
+                    if(P.taille()!=1){
+                      Erreur err("initialisation Ressort", "Ressort::Ressort(const initializer_list<double>&, const initializer_list<double>&, const Vecteur3D&, const Vecteur3D&, double, double, double, SupportADessin*)",
+                                 "Le ressort doit avoir un seul paramètre (et sa dérivée temporelle) : la distance à la position d'équilibre (et sa vitesse). Ici : "+to_string(P.taille())+"paramètre(s).");
+                      throw err;
+                    }
+                  }
 
 unique_ptr<Ressort> Ressort::clone() const{
   return unique_ptr<Ressort>(new Ressort(*this));
@@ -244,6 +257,225 @@ ostream& Ressort::affiche(ostream& sortie) const{
 
 /*##############################################################################
 ###                                                                          ###
+###                    METHODES DE LA CLASSE Torsion                         ###
+###                                                                          ###
+##############################################################################*/
+//constructeur
+Torsion::Torsion(const initializer_list<double>& liP,
+                 const initializer_list<double>& liQ,
+                 const Vecteur3D& a, const Vecteur3D& O,
+                 double frottement, double inertie, double C_torsion,
+                 SupportADessin* support)
+                 : Oscillateur(liP,liQ,a,O,support)//TODO ERREUR
+                  , frott(frottement), I(inertie), C(C_torsion){}
+
+
+
+unique_ptr<Torsion> Torsion::clone() const{
+  return unique_ptr<Torsion>(new Torsion(*this));
+}
+
+unique_ptr<Oscillateur> Torsion::copie() const{
+  return clone();
+}
+
+void Torsion::dessine() const{
+  if(support!=nullptr){
+    support->dessine(*this);
+  }
+}
+
+//fonction d'évolution
+Vecteur Torsion::f(const double& t) const{
+  Vecteur retour({-(C*P.get_coord(1)+ frott*Q.get_coord(1))/I});
+  return retour;
+}
+
+double Torsion::get_angleNutation(bool degre) const{
+  double angle(0);
+  if(degre){angle*=180.0/M_PI;}
+  return angle;
+}
+
+double Torsion::get_angleRotPro(bool degre) const{
+  double angle(P.get_coord(1));
+  if(degre){angle*=180.0/M_PI;}
+  return angle;
+}
+
+ostream& Torsion::affiche(ostream& sortie) const{
+  sortie << "# Torsion :" << endl;
+  sortie << P << " # parametre (angle)" << endl;
+  sortie << Q << " # vitesse angulaire" << endl;
+  return sortie;
+}
+
+
+/*##############################################################################
+###                                                                          ###
+###                    METHODES DE LA CLASSE PenduleDouble                   ###
+###                                                                          ###
+##############################################################################*/
+
+//constructeur
+PenduleDouble::PenduleDouble(const std::initializer_list<double>& liP,
+                       const std::initializer_list<double>& liQ,
+                       const Vecteur3D& a,
+                       const Vecteur3D& O,
+                       double masse1, double longueur1,
+                       double masse2, double longueur2,
+                       SupportADessin* support) :
+                       Oscillateur(liP, liQ, a, O, support),
+                       m1(masse1), L1(longueur1),
+                       m2(masse2), L2(longueur2) {}
+
+
+unique_ptr<PenduleDouble> PenduleDouble::clone() const{
+  return unique_ptr<PenduleDouble>(new PenduleDouble(*this));
+}
+
+unique_ptr<Oscillateur> PenduleDouble::copie() const{
+  return clone();
+}
+
+void PenduleDouble::dessine() const{
+  if(support!=nullptr){
+    support->dessine(*this);
+  }
+}
+
+//fonction d'évolution
+Vecteur PenduleDouble::f(const double& t) const{
+  double M(m1+m2);
+  double theta1(P.get_coord(1));
+  double theta2(P.get_coord(2));
+  double delta(theta1-theta2);
+  double a((m2*g.norme()*cos(delta)*sin(theta2)-M*g.norme()*sin(theta1)
+  -m2*L1*Q.get_coord(1)*Q.get_coord(1)*cos(delta)*sin(delta)
+  -m2*L2*Q.get_coord(2)*Q.get_coord(2)*sin(delta))/(m1*L1+m2*L1*sin(delta)*sin(delta)));
+
+  double b((M*g.norme()*cos(delta)*sin(theta1)-M*g.norme()*sin(theta2)
+  +m2*L2*Q.get_coord(2)*Q.get_coord(2)*cos(delta)*sin(delta)
+  +M*L1*Q.get_coord(1)*Q.get_coord(1)*sin(delta))/(m1*L2+m2*L2*sin(delta)*sin(delta)));
+
+  Vecteur retour({a, b});
+  return retour;
+}
+
+//retourne la position du 1er pendule
+Vecteur3D PenduleDouble::pos1()const{
+  Vecteur3D retour(O + L1*cos(P.get_coord(1))*(~g) + L1*sin(P.get_coord(1))*a);
+  return retour;
+}
+
+//retourne la position du 2eme pendule
+Vecteur3D PenduleDouble::pos2()const{
+  Vecteur3D retour(pos1() + L2*cos(P.get_coord(2))*(~g) + L2*sin(P.get_coord(2))*a);
+  return retour;
+}
+
+double PenduleDouble::get_angleNutation(bool degre) const{
+  double angle(P.get_coord(1));
+  if(degre){angle*=180.0/M_PI;}
+  return angle;
+}
+
+double PenduleDouble::get_angleNutation2(bool degre) const{
+  double angle(P.get_coord(2)-P.get_coord(1));
+  if(degre){angle*=180.0/M_PI;}
+  return angle;
+}
+
+double PenduleDouble::get_angleRotPro(bool degre) const{
+  double angle(0);
+  if(degre){angle*=180.0/M_PI;}
+  return angle;
+}
+
+
+// permet l'affichage d'un oscillateur de façon standardisée //
+ostream& PenduleDouble::affiche(ostream& sortie) const{
+  sortie << "# PenduleDouble :" << endl;
+  sortie << P << " # parametres (angles)" << endl;
+  sortie << Q << " # vitesses angulaires" << endl;
+  sortie << pos1() << "# position du 1er pendule" << endl;
+  sortie << pos2() << "# position du 2eme pendule" << endl;
+  return sortie;
+}
+
+
+/*##############################################################################
+###                                                                          ###
+###                    METHODES DE LA CLASSE PenduleRessort                  ###
+###                                                                          ###
+##############################################################################*/
+
+//constructeur
+PenduleRessort::PenduleRessort(const std::initializer_list<double>& liP,
+                               const std::initializer_list<double>& liQ,
+                               const Vecteur3D& a,
+                               const Vecteur3D& O,
+                               double masse, double longueur, double raideur,
+                               SupportADessin* support):
+                               Oscillateur(liP, liQ, a, O, support),
+                               m(masse), L(longueur), k(raideur) {}
+
+
+unique_ptr<PenduleRessort> PenduleRessort::clone() const{
+  return unique_ptr<PenduleRessort>(new PenduleRessort(*this));
+}
+
+unique_ptr<Oscillateur> PenduleRessort::copie() const{
+  return clone();
+}
+
+void PenduleRessort::dessine() const{
+  if(support!=nullptr){
+    support->dessine(*this);
+  }
+}
+
+//fonction d'évolution
+Vecteur PenduleRessort::f(const double& t) const{
+  Vecteur retour(Vecteur({0,g.norme()}) - (k/m)*(1-(L/P.norme()))*P);
+  return retour;
+}
+
+//retourne position d'un pendule
+Vecteur3D PenduleRessort::position() const {
+  Vecteur3D retour(O + P.get_coord(1)*a + P.get_coord(2)*(~g));
+  return retour;
+}
+
+
+double PenduleRessort::get_angleNutation(bool degre) const{
+  double angle(0);
+  double x(P.get_coord(1)), z(-P.get_coord(2));
+  if(x!=0 or z!=0){angle=Vecteur3D(1,0,0).angle({x,0,z});}
+  if(z<0){angle*=-1;}
+  if(degre){angle=angle*180.0/M_PI+90;}
+  else{angle+=0.5*M_PI;}
+  return angle;
+}
+
+double PenduleRessort::get_angleRotPro(bool degre) const{
+  double angle(0);
+  if(degre){angle*=180.0/M_PI;}
+  return angle;
+}
+
+
+// permet l'affichage d'un oscillateur de façon standardisée //
+ostream& PenduleRessort::affiche(ostream& sortie) const{
+  sortie << "# PenduleRessort :" << endl;
+  sortie << P << " # parametre (x et y)" << endl;
+  sortie << Q << " # vitesses" << endl;
+  sortie << position() << "# position" << endl;
+  return sortie;
+}
+
+/*##############################################################################
+###                                                                          ###
 ###                    METHODES DE LA CLASSE Chariot                         ###
 ###                                                                          ###
 ##############################################################################*/
@@ -260,6 +492,11 @@ Chariot::Chariot(const initializer_list<double>& liP,
                  {if(a*g!=0){
                     Erreur err("initialisation Chariot", "Chariot::Chariot(const initializer_list<double>&, const initializer_list<double>&, const Vecteur3D&, const Vecteur3D&, double, double, double, double, double, doubel, SupportADessin*)",
                                "L'axe du chariot doit être orthogonal au vecteur g.");
+                    throw err;
+                  }
+                  if(P.taille()!=2){
+                    Erreur err("initialisation Chariot", "Chariot::Chariot(const initializer_list<double>&, const initializer_list<double>&, const Vecteur3D&, const Vecteur3D&, double, double, double, double, double, doubel, SupportADessin*)",
+                               "Le chariot doit avoir deux paramètres (et leur dérivée temporelle) : la distance du chariot et l'angle du pendule (+dérivées). Ici : "+to_string(P.taille())+"paramètre(s).");
                     throw err;
                   }
                  }
@@ -301,7 +538,7 @@ Vecteur3D Chariot::posC()const{
   return retour;
 }
 
-Vecteur3D Chariot::position()const{
+Vecteur3D Chariot::posP()const{
   Vecteur3D retour(posC()+L*sin(P.get_coord(2))*a+L*cos(P.get_coord(2))*(~g));
   return retour;
 }
@@ -323,6 +560,6 @@ ostream& Chariot::affiche(std::ostream& sortie) const {
   sortie << P << " # parametre (distance de l'origine du chariot et angle du pendule)" << endl;
   sortie << Q << " # vitesse (vitesse chariot et vitesse angulaire du pendule)" << endl;
   sortie << posC() << "# position chariot" << endl;
-  sortie << position() << "# position pendule" << endl;
+  sortie << posP() << "# position pendule" << endl;
   return sortie;
 }

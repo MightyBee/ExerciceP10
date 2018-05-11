@@ -4,7 +4,10 @@
 
 int main(int argc, char* argv[]){
   QApplication a(argc, argv);
-//  try{
+  try{
+
+
+
     IntegrateurEulerCromer euler;
     IntegrateurNewmark newmark;
     IntegrateurRungeKutta rk;
@@ -13,23 +16,21 @@ int main(int argc, char* argv[]){
     //Pendule p2({M_PI-0.00001},{0},{1,1,0},{1,0,0},1,1,0.05);
     //Ressort r({1}, {0}, {-1,2,-1}, {0,0,0}, 2, 1);
     //Chariot c({0,0},{4,0},{1,-2,0},{-1,-1,0},100,10,0,1,1,0);
-    GLWidget w1(euler);
-    GLWidget w2(newmark);
-    GLWidget w3(rk);
-    w1.initializeSysteme();
-    w2.initializeSysteme();
-    w3.initializeSysteme();
+    GLWidget w(rk);
+    //w.initializeSysteme();
+    //w.add(PenduleDouble({3.14,3.14}));
+    //w.add(PenduleDouble({1.5,1.5},{0,0},{1,0,0},{0,1,0},1,1,10,2));
+    w.add(PenduleRessort({2,1},{0,0},{2,1,0},{0,0,0},0.5,1,10));
     //w.add(p1);
     //w.add(p2);
     //w.add(r);
     //w.add(c);
-    w1.show();
-    w2.show();
-    w3.show();
-//  } catch(Erreur err){
-//    err.affiche("main_qt_gl.cc");
-//  }
-  return a.exec();
+    w.show();
+    return a.exec();
+  } catch(Erreur err){
+    err.affiche("main_qt_gl.cc");
+  }
+
 }
 
 // TODO, question : que mettre dans le bloc try ? tout ? ou moins ?

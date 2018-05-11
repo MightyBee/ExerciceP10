@@ -31,7 +31,6 @@ class Oscillateur : public Dessinable {
 
     //autres opérations
     virtual Vecteur f(const double& t=0) const = 0; // fonction P''=f(t,P,P') : détermine le mouvement de l'oscillateur
-    virtual Vecteur3D position() const = 0;
     virtual std::ostream& affiche(std::ostream& sortie) const; // permet permet d'afficher le vecteur par composants sur un flot de sortie
 
   protected:
@@ -59,7 +58,7 @@ public:
   virtual void dessine() const override;
   //autres opérations
   virtual Vecteur f(const double& t) const override;
-  virtual Vecteur3D position() const override;
+  Vecteur3D position() const;
   double get_L() const{return L;}
   virtual double get_angleNutation(bool degre=false) const override;
   virtual double get_angleRotPro(bool degre=false) const override;
@@ -86,7 +85,7 @@ public:
   virtual void dessine() const override;
   //autre fonctions
   virtual Vecteur f(const double& t) const override;
-  virtual Vecteur3D position() const override;
+  Vecteur3D position() const;
   double get_x() const{return P.get_coord(1);}
   virtual double get_angleNutation(bool degre=false) const override;
   virtual double get_angleRotPro(bool degre=false) const override;
@@ -114,7 +113,7 @@ public:
 
   virtual Vecteur f(const double& t) const override;
   Vecteur3D posC()const; // position du chariot
-  virtual Vecteur3D position()const override; //position du pendule
+  Vecteur3D posP()const; //position du pendule
   double get_L() const{return L;}
   double get_x() const{return P.get_coord(1);}
   virtual double get_angleNutation(bool degre=false) const override;
@@ -135,3 +134,98 @@ private:
 };
 
 //simon
+
+
+class Torsion : public Oscillateur{
+public:
+  //constructeur - destructeur
+  explicit Torsion(const std::initializer_list<double>& liP={0},
+          const std::initializer_list<double>& liQ={0},
+          const Vecteur3D& a=Vecteur3D(1,0,0),
+          const Vecteur3D& O=Vecteur3D(0,0,0),
+          double frottement = 0.0,
+          double inertie = 1.0,
+          double C_torsion = 1.0,
+          SupportADessin* support=nullptr);
+  virtual ~Torsion(){}
+  std::unique_ptr<Torsion> clone() const;
+  virtual std::unique_ptr<Oscillateur> copie() const override;
+  virtual void dessine() const override;
+  //autres fonctions
+  virtual Vecteur f(const double& t) const override;
+
+  virtual double get_angleNutation(bool degre=false) const override;
+  virtual double get_angleRotPro(bool degre=false) const override;
+  virtual std::ostream& affiche(std::ostream& sortie) const override;
+
+private:
+  double I;
+  double C;
+  double frott;
+};
+
+
+class PenduleDouble : public Oscillateur{
+public:
+  //constructeur - destructeur
+  explicit PenduleDouble(const std::initializer_list<double>& liP={0,0},
+                         const std::initializer_list<double>& liQ={0,0},
+                         const Vecteur3D& a=Vecteur3D(1,0,0),
+                         const Vecteur3D& O=Vecteur3D(0,0,0),
+                         double masse1 = 1.0, double longueur1 = 1.0,
+                         double masse2 = 1.0, double longueur2 = 1.0,
+                         SupportADessin* support=nullptr);
+  virtual ~PenduleDouble(){}
+  std::unique_ptr<PenduleDouble> clone() const;
+  virtual std::unique_ptr<Oscillateur> copie() const override;
+  virtual void dessine() const override;
+  //autres fonctions
+  virtual Vecteur f(const double& t) const override;
+  Vecteur3D pos1() const;
+  Vecteur3D pos2() const;
+  double get_L1() const{return L1;}
+  double get_L2() const{return L2;}
+
+  virtual double get_angleNutation(bool degre=false) const override;
+  double get_angleNutation2(bool degre=false) const;
+  virtual double get_angleRotPro(bool degre=false) const override;
+  virtual std::ostream& affiche(std::ostream& sortie) const override;
+
+private:
+  double m1;
+  double m2;
+  double L1;
+  double L2;
+};
+
+
+class PenduleRessort : public Oscillateur{
+public:
+  //constructeur - destructeur
+  explicit PenduleRessort(const std::initializer_list<double>& liP={0,0},
+                          const std::initializer_list<double>& liQ={0,0},
+                          const Vecteur3D& a=Vecteur3D(1,0,0),
+                          const Vecteur3D& O=Vecteur3D(0,0,0),
+                          double masse=1.0, double longueur=1.0, double raideur=1.0,
+                          SupportADessin* support=nullptr);
+  virtual ~PenduleRessort(){}
+  std::unique_ptr<PenduleRessort> clone() const;
+  virtual std::unique_ptr<Oscillateur> copie() const override;
+  virtual void dessine() const override;
+  //autres fonctions
+  virtual Vecteur f(const double& t) const override;
+  virtual Vecteur3D position() const;
+  double get_L() const{return P.norme();}
+
+  virtual double get_angleNutation(bool degre=false) const override;
+  virtual double get_angleRotPro(bool degre=false) const override;
+  virtual std::ostream& affiche(std::ostream& sortie) const override;
+
+private:
+  double m;
+  double L;
+  double k;
+
+
+
+};
