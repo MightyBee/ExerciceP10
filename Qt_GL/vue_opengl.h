@@ -21,6 +21,8 @@ class VueOpenGL : public SupportADessin {
   virtual void dessine(PenduleDouble const&) override;
   virtual void dessine(PenduleRessort const&) override;
 
+  virtual void phase(Oscillateur const&, Integrateur const&, double tFinal=10, double dt=0.01 ) override;
+
 
   // méthodes de (ré-)initialisation
   void init();

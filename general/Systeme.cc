@@ -139,6 +139,14 @@ void Systeme::dessine() const{
   }
 }
 
+void Systeme::phase() const{
+  if(support!=nullptr){
+    for(auto const& osc : collection){
+      support->phase(*osc, *integrateur);
+    }
+  }
+}
+
 // permet l'affichage d'un systeme de façon standardisée //
 ostream& Systeme::affiche(ostream& sortie) const{
   sortie << "# Systeme :" << endl << endl;

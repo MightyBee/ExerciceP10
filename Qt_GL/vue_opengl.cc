@@ -1,8 +1,11 @@
+#include "glwidget.h"
 #include "vue_opengl.h"
 #include "vertex_shader.h" // Identifiants Qt de nos différents attributs
 #include "Systeme.h"
 #include "Oscillateur.h"
 #include "Vecteur.h"
+#include <memory>
+
 
 // ======================================================================
 void VueOpenGL::dessine(Systeme const& sys)
@@ -11,6 +14,12 @@ void VueOpenGL::dessine(Systeme const& sys)
   for(auto const& osc : sys.get_col()){
     osc->dessine();
   }
+}
+
+void VueOpenGL::phase(Oscillateur const& o, Integrateur const& integrat, double tFinal, double dt){
+  PhaseWidget* ph(new PhaseWidget(o,integrat, tFinal, dt));
+  ph->show();
+  //TODO le delete du pointeur ?
 }
 
 void VueOpenGL::dessine(Pendule const& p)

@@ -88,7 +88,15 @@ void Oscillateur::set_Q(unsigned int n, double newValeur){
   }
 }
 
+Vecteur Oscillateur::PQ() const{
+  return Vecteur({P.get_coord(1),Q.get_coord(1)});
+}
 
+void Oscillateur::phase(Integrateur const& integrat) const{
+  if(support!=nullptr){
+    support->phase(*this,integrat);
+  }
+}
 
 // permet l'affichage d'un oscillateur de façon standardisée //
 ostream& Oscillateur::affiche(ostream& sortie) const{

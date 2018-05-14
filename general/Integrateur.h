@@ -10,7 +10,7 @@ class Integrateur{
 
     virtual std::unique_ptr<Integrateur> copie() const = 0;
     // autres méthodes
-    virtual void evolue(Oscillateur& osc, double dt, double t) = 0; // méthode qui fait évoluer l'intégrateur d'un pas de temps
+    virtual void evolue(Oscillateur& osc, double dt, double t) const = 0; // méthode qui fait évoluer l'intégrateur d'un pas de temps
 };
 
 // classe héritée d'Integrateur, (méthode d'intégration numérique : Euler-Cromer)
@@ -23,7 +23,7 @@ class IntegrateurEulerCromer : public Integrateur{
     virtual std::unique_ptr<Integrateur> copie() const override{return clone();}
 
     // autres méthodes
-    virtual void evolue(Oscillateur& osc, double dt=0.1, double t=0) override; // spécialisation de la méthode "evolue()" de la super-classe, avance d'un pas de temps avec la méthode d'intégration d'Euler-Cromer
+    virtual void evolue(Oscillateur& osc, double dt=0.1, double t=0) const override; // spécialisation de la méthode "evolue()" de la super-classe, avance d'un pas de temps avec la méthode d'intégration d'Euler-Cromer
 };
 
 
@@ -37,7 +37,7 @@ class IntegrateurNewmark : public Integrateur{
     virtual std::unique_ptr<Integrateur> copie() const override{return clone();}
 
     // autres méthodes
-    virtual void evolue(Oscillateur& osc, double dt=0.1, double t=0) override; // spécialisation de la méthode "evolue()" de la super-classe, avance d'un pas de temps avec la méthode d'intégration de Newmark
+    virtual void evolue(Oscillateur& osc, double dt=0.1, double t=0) const override; // spécialisation de la méthode "evolue()" de la super-classe, avance d'un pas de temps avec la méthode d'intégration de Newmark
 };
 
 
@@ -52,6 +52,6 @@ class IntegrateurRungeKutta : public Integrateur{
     virtual std::unique_ptr<Integrateur> copie() const override{return clone();}
 
     // autres méthodes
-    virtual void evolue(Oscillateur& osc, double dt=0.1, double t=0) override; // spécialisation de la méthode "evolue()" de la super-classe, avance d'un pas de temps avec la méthode d'intégration de Runge-Kutta
+    virtual void evolue(Oscillateur& osc, double dt=0.1, double t=0) const override; // spécialisation de la méthode "evolue()" de la super-classe, avance d'un pas de temps avec la méthode d'intégration de Runge-Kutta
 
 };

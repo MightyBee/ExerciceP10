@@ -17,7 +17,7 @@ unique_ptr<IntegrateurEulerCromer> IntegrateurEulerCromer::clone() const{
 
 
 // spécialisation de la méthode "evolue()" de la super-classe, avance d'un pas de temps avec la méthode d'intégration d'Euler-Cromer
-void IntegrateurEulerCromer::evolue(Oscillateur& osc, double dt, double t){
+void IntegrateurEulerCromer::evolue(Oscillateur& osc, double dt, double t) const{
   osc.set_Q(osc.get_Q()+dt*osc.f(t));
   osc.set_P(osc.get_P()+dt*osc.get_Q());
 }
@@ -37,7 +37,7 @@ unique_ptr<IntegrateurNewmark> IntegrateurNewmark::clone() const{
 
 
 // spécialisation de la méthode "evolue()" de la super-classe, avance d'un pas de temps avec la méthode d'intégration de Newmark
-void IntegrateurNewmark::evolue(Oscillateur& osc, double dt, double t){
+void IntegrateurNewmark::evolue(Oscillateur& osc, double dt, double t) const{
   Vecteur P(osc.get_P());
   Vecteur Q(osc.get_Q());
   Vecteur s(osc.f(t)), q(0), r(0);
@@ -62,7 +62,7 @@ unique_ptr<IntegrateurRungeKutta> IntegrateurRungeKutta::clone() const{
 }
 
 
-void IntegrateurRungeKutta::evolue(Oscillateur& osc, double dt, double t){
+void IntegrateurRungeKutta::evolue(Oscillateur& osc, double dt, double t) const{
   Vecteur P(osc.get_P());
   Vecteur Q(osc.get_Q());
   Vecteur k1(Q);

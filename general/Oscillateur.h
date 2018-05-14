@@ -30,6 +30,8 @@ class Oscillateur : public Dessinable {
     void set_Q(unsigned int n, double newValeur); // permet de modifier une des "vitesses"
 
     //autres opérations
+    Vecteur PQ() const;
+    void phase(Integrateur const& integrat) const;
     virtual Vecteur f(const double& t=0) const = 0; // fonction P''=f(t,P,P') : détermine le mouvement de l'oscillateur
     virtual std::ostream& affiche(std::ostream& sortie) const; // permet permet d'afficher le vecteur par composants sur un flot de sortie
 

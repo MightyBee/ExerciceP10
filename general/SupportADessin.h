@@ -1,6 +1,7 @@
 #pragma once
 
 class Systeme;
+class Oscillateur;
 class Pendule;
 class Ressort;
 class Torsion;
@@ -8,8 +9,9 @@ class Chariot;
 class PenduleDouble;
 class PenduleRessort;
 
-class SupportADessin
-{
+class Integrateur;
+
+class SupportADessin{
  public:
 
   virtual ~SupportADessin() {}
@@ -22,4 +24,5 @@ class SupportADessin
   virtual void dessine(PenduleDouble const&) = 0;
   virtual void dessine(PenduleRessort const&) = 0;
 
+  virtual void phase(Oscillateur const&, Integrateur const&,  double tFinal=10, double dt=0.01 ) = 0;
 };
