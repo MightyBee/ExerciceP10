@@ -16,6 +16,7 @@ class Systeme : public Dessinable {
     const std::vector<std::unique_ptr<Oscillateur>>& get_col() const {return collection;}
     virtual void dessine() const override;
     void phase() const;
+    void phase(unsigned int n) const;
     std::ostream& affiche(std::ostream& sortie) const; // permet permet d'afficher le systeme sur un flot de sortie
   private:
     std::unique_ptr<Integrateur> integrateur;

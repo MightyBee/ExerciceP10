@@ -51,8 +51,9 @@ private:
 class PhaseWidget : public QOpenGLWidget
 {
 public:
-  PhaseWidget( Oscillateur const& o, Integrateur const& i, double t=10.0, double dt=0.01, QWidget* parent = nullptr)
+  PhaseWidget(Oscillateur const& o, Integrateur const& i, double t=10.0, double dt=0.01, QWidget* parent = nullptr)
     : QOpenGLWidget(parent), osc(o.copie()), integrat(i.copie()), tFinal(t), dt(dt) {}
+
   virtual ~PhaseWidget() {}
 
 private:

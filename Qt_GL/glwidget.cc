@@ -113,11 +113,46 @@ void GLWidget::keyPressEvent(QKeyEvent* event)
     pause();
     break;
 
+  case Qt::Key_V:
+    vue.changeDessin();
+    break;
+
   case Qt::Key_P:
     pause();
     s.phase();
     pause();
     break;
+
+  case Qt::Key_1:
+    pause();
+    s.phase(1);
+    pause();
+    break;
+
+  case Qt::Key_2:
+    pause();
+    s.phase(2);
+    pause();
+    break;
+
+  case Qt::Key_3:
+    pause();
+    s.phase(3);
+    pause();
+    break;
+
+  case Qt::Key_4:
+    pause();
+    s.phase(4);
+    pause();
+    break;
+
+  case Qt::Key_5:
+    pause();
+    s.phase(5);
+    pause();
+    break;
+
   };
 
   updateGL(); // redessine
@@ -178,25 +213,13 @@ void PhaseWidget::paintGL()
   QMatrix4x4 matrice;
   prog.setUniformValue("vue_modele", matrice);              // On met la matrice identité dans vue_modele
 
-  /* Dessine le cadre blanc */
-  matrice.setToIdentity();
-  matrice.ortho(-1.0, 1.0, -1.0, 1.0, -10.0, 10.0);         // matrice simple pour faire le cadre
-  prog.setUniformValue("projection", matrice);
-
-  prog.setAttributeValue(CouleurId, 1.0, 1.0, 1.0);
-  glBegin(GL_LINE_LOOP);                                    // la primitive LINE_LOOP referme le tracé avec une ligne (n lignes)
-  prog.setAttributeValue(SommetId, -1.0, -1.0, 2.0);        // le 2.0 dans la composante z permet de mettre le cadre par dessus tout
-  prog.setAttributeValue(SommetId, +1.0, -1.0, 2.0);        // ceci fonctionne grace à l'option GL_DEPTH_TEST
-  prog.setAttributeValue(SommetId, +1.0, +1.0, 2.0);
-  prog.setAttributeValue(SommetId, -1.0, +1.0, 2.0);
-  glEnd();
 
   /* Change de matrice de projection adpatée aux zoom du graph */
   matrice.setToIdentity();
-  double xmin(-2.0 * M_PI);
-  double xmax(+2.0 * M_PI);
-  double ymin(-1.2);
-  double ymax(+1.2);
+  double xmin(-5.0);
+  double xmax(+5.0);
+  double ymin(-5.0);
+  double ymax(+5.0);
   matrice.ortho(xmin, xmax, ymin, ymax, -10.0, 10.0);
   prog.setUniformValue("projection", matrice);
 

@@ -147,6 +147,12 @@ void Systeme::phase() const{
   }
 }
 
+void Systeme::phase(unsigned int n) const{
+  if(support!=nullptr and n>0 and n<=collection.size()){
+    support->phase(*collection[n-1], *integrateur);
+  }
+}
+
 // permet l'affichage d'un systeme de façon standardisée //
 ostream& Systeme::affiche(ostream& sortie) const{
   sortie << "# Systeme :" << endl << endl;

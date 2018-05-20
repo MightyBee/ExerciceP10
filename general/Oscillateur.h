@@ -39,8 +39,8 @@ class Oscillateur : public Dessinable {
     //attributs
     Vecteur P; // vecteur contenant les paramètres de l'oscillateur
     Vecteur Q; // vecteur contenenat les dérivées des paramètres
-    Vecteur3D a; //vecteur3D représentant la direction principale (axe)
-    Vecteur3D O; //vecteur3D représentant la position de référence (origine)
+    Vecteur3D a; // vecteur3D représentant la direction principale (axe)
+    Vecteur3D O; // vecteur3D représentant la position de référence (origine)
 };
 
 std::ostream& operator<<(std::ostream& sortie, const Oscillateur& osc); // permet l'affichage standard : sortie << oscillateur;
@@ -61,6 +61,7 @@ public:
   //autres opérations
   virtual Vecteur f(const double& t) const override;
   Vecteur3D position() const;
+  double vitesse() const{return abs(L*Q.get_coord(1));}
   double get_L() const{return L;}
   virtual double get_angleNutation(bool degre=false) const override;
   virtual double get_angleRotPro(bool degre=false) const override;
@@ -88,6 +89,7 @@ public:
   //autre fonctions
   virtual Vecteur f(const double& t) const override;
   Vecteur3D position() const;
+  double vitesse() const{return abs(Q.get_coord(1));}
   double get_x() const{return P.get_coord(1);}
   virtual double get_angleNutation(bool degre=false) const override;
   virtual double get_angleRotPro(bool degre=false) const override;
@@ -115,7 +117,9 @@ public:
 
   virtual Vecteur f(const double& t) const override;
   Vecteur3D posC()const; // position du chariot
+  double vitC() const{return abs(Q.get_coord(1));}
   Vecteur3D posP()const; //position du pendule
+  double vitP() const;
   double get_L() const{return L;}
   double get_x() const{return P.get_coord(1);}
   virtual double get_angleNutation(bool degre=false) const override;
@@ -156,6 +160,7 @@ public:
   //autres fonctions
   virtual Vecteur f(const double& t) const override;
 
+  double vitesse() const{return abs(Q.get_coord(1));}
   virtual double get_angleNutation(bool degre=false) const override;
   virtual double get_angleRotPro(bool degre=false) const override;
   virtual std::ostream& affiche(std::ostream& sortie) const override;
@@ -184,7 +189,9 @@ public:
   //autres fonctions
   virtual Vecteur f(const double& t) const override;
   Vecteur3D pos1() const;
+  double vit1() const{return abs(L1*Q.get_coord(1));}
   Vecteur3D pos2() const;
+  double vit2() const;
   double get_L1() const{return L1;}
   double get_L2() const{return L2;}
 
@@ -216,7 +223,8 @@ public:
   virtual void dessine() const override;
   //autres fonctions
   virtual Vecteur f(const double& t) const override;
-  virtual Vecteur3D position() const;
+  Vecteur3D position() const;
+  double vitesse() const{return sqrt(pow(Q.get_coord(1),2)+pow(Q.get_coord(2),2));}
   double get_L() const{return P.norme();}
 
   virtual double get_angleNutation(bool degre=false) const override;
