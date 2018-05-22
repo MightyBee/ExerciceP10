@@ -116,10 +116,15 @@ size_t Vecteur::taille() const{
 
 
 //#############################  manipulateurs  ##############################//
-/*// ajoute une dimension au vecteur courant, possibilité de specifier la valeur de la nouvelle composante (par défaut : 0) //
+// ajoute une dimension au vecteur courant, possibilité de specifier la valeur de la nouvelle composante (par défaut : 0) //
 void Vecteur::augmente(double newCoord){
-	coord.push_back(newCoord);
-}*/
+	if(possible()){coord.push_back(newCoord);} // possible polymorphique, empeche
+}
+
+// retourne s'il est possible d'ajouter une dimension au vecteur, toujours vrai pour un Vecteur (générique)
+bool Vecteur::possible() const{
+	return true;
+}
 
 // modifie la n-ieme coordonnee du vecteur //
 void Vecteur::set_coord(unsigned int n, double newValeur){
@@ -249,6 +254,15 @@ Vecteur3D::Vecteur3D(const Vecteur& v) : Vecteur(v) {
 Vecteur3D::Vecteur3D(const double& x, const double& y, const double& z)
 										: Vecteur({x,y,z}) {}
 
+
+// retourne s'il est possible d'ajouter une dimension au vecteur
+bool Vecteur3D::possible() const{
+	if(coord.size()==2){
+		return true;
+	} else {
+		return false;
+	}
+}
 
 // retourne le produit vectoriel du vecteur courant avec un autre vecteur 3D //
 Vecteur3D Vecteur3D::operator^(const Vecteur3D& v2) const{

@@ -29,8 +29,8 @@ class Vecteur {
 		size_t taille() const; // retourne la dim du vecteur
 
 		//manipulateurs
-		/*void augmente(double newCoord=0); // ajoute une dimension au vecteur et affecte une valeur pour cette dimension
-		on l'a supprimé car il n'était pas utilisé et était néfaste pour la classe heritée Vecteur3D*/
+		void augmente(double newCoord=0); // ajoute une dimension au vecteur et affecte une valeur pour cette dimension
+		virtual bool possible() const; // retourne s'il est possible d'ajouter une dimension au vecteur
 		void set_coord(unsigned int n, double newValeur); // modifie la n-ieme coordonnee du vecteur
 
 		//autres operations
@@ -61,6 +61,7 @@ class Vecteur3D : public Vecteur{
 		explicit Vecteur3D(const Vecteur& v);
 		Vecteur3D(const double& x, const double& y, const double& z); // construit un vecteur 3D, avec valeurs x,y,z spécifiées
 
+		virtual bool possible() const override; // retourne s'il est possible d'ahjouter une dimension au vecteur
 		Vecteur3D operator^(const Vecteur3D& v2) const; // retourne le produit vectoriel de l'instance courante avec un autre vecteur 3D
 		Vecteur3D projXY() const; // retourne la projection du vecteur sur le plan XY
 		double angle(Vecteur3D const& v2) const;

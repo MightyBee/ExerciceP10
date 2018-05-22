@@ -5,6 +5,7 @@
 #include "constantes.h"
 using namespace std;
 
+
 int main(){
   try{
     TextViewer TV(cout);
@@ -21,6 +22,7 @@ int main(){
       syst.evolue();
       syst.dessine();
     }
+    syst.phase();
   }catch(Erreur err){
     err.affiche("testSysteme.cc");
   }

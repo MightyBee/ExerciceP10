@@ -1,8 +1,11 @@
+#include "glwidget.h"
 #include "vue_opengl.h"
 #include "vertex_shader.h" // Identifiants Qt de nos différents attributs
 #include "Systeme.h"
 #include "Oscillateur.h"
 #include "Vecteur.h"
+#include <memory>
+
 
 // ======================================================================
 void VueOpenGL::dessine(Systeme const& sys)
@@ -11,6 +14,12 @@ void VueOpenGL::dessine(Systeme const& sys)
   for(auto const& osc : sys.get_col()){
     osc->dessine();
   }
+}
+
+void VueOpenGL::phase(Oscillateur const& o, Integrateur const& integrat, double tFinal, double dt){
+  PhaseWidget* ph(new PhaseWidget(o,integrat, tFinal, dt));
+  ph->show();
+  //TODO le delete du pointeur ?
 }
 
 void VueOpenGL::dessine(Pendule const& p)
@@ -36,10 +45,13 @@ void VueOpenGL::dessine(Pendule const& p)
   matrice.translate(0.0,0.0,-p.get_L());
   //matrice.rotate(90,1,0,0);
   matrice.scale(0.15);
-  dessineCube(matrice);
-  //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // passe en mode "fil de fer"
-  //dessineSphere(matrice);
-  //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // repasse en mode "plein"
+  if(vitesse){
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // passe en mode "fil de fer"
+    dessineSphere(matrice, p.vitesse());
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // repasse en mode "plein"
+  }else{
+    dessineCube(matrice);
+  }
 }
 
 void VueOpenGL::dessine(Ressort const& r)
@@ -58,12 +70,17 @@ void VueOpenGL::dessine(Ressort const& r)
   glEnd();
 
   // dessin de la masse
-  //matrice.translate( pos.x(), pos.y(), pos.z());
   matrice.translate(O.x(),O.y(),O.z());
   angleEuler(r.get_anglePrecession(true),r.get_angleNutation(true),0,matrice);
   matrice.translate(0,r.get_x(),0);
   matrice.scale(0.15);
-  dessineCube(matrice);
+  if(vitesse){
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // passe en mode "fil de fer"
+    dessineSphere(matrice, r.vitesse());
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // repasse en mode "plein"
+  }else{
+    dessineCube(matrice);
+  }
 }
 
 void VueOpenGL::dessine(Torsion const& t)
@@ -82,11 +99,18 @@ void VueOpenGL::dessine(Torsion const& t)
   // dessin du pendule (masse)
   matrice.translate(O.x(),O.y(),O.z());
   angleEuler(t.get_anglePrecession(true),t.get_angleNutation(true),t.get_angleRotPro(true),matrice);
-  matrice.scale(0.15);
-  matrice.translate(-1,0,0);
-  dessineCube(matrice);
-  matrice.translate(2,0,0);
-  dessineCube(matrice);
+  matrice.scale(0.1);
+  if(vitesse){
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // passe en mode "fil de fer"
+    dessineSphere(matrice,t.vitesse());
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // repasse en mode "plein"
+  }else{
+    dessineCube(matrice);
+    matrice.translate(-1,0,0);
+    dessineCube(matrice);
+    matrice.translate(2,0,0);
+    dessineCube(matrice);
+  }
 }
 
 void VueOpenGL::dessine(Chariot const& c){
@@ -111,12 +135,24 @@ void VueOpenGL::dessine(Chariot const& c){
   matrice.translate(0,c.get_x(),0);
   QMatrix4x4 reference(matrice);
   matrice.scale(0.15);
-  dessineCube(matrice);
+  if(vitesse){
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // passe en mode "fil de fer"
+    dessineSphere(matrice,c.vitC());
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // repasse en mode "plein"
+  }else{
+    dessineCube(matrice);
+  }
   matrice=reference;
   angleEuler(0,c.get_angleNutation(true),0,matrice);
   matrice.translate(0.0,0.0,-c.get_L());
   matrice.scale(0.15);
-  dessineCube(matrice);
+  if(vitesse){
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // passe en mode "fil de fer"
+    dessineSphere(matrice,c.vitP());
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // repasse en mode "plein"
+  }else{
+    dessineCube(matrice);
+  }
 }
 
 void VueOpenGL::dessine(PenduleDouble const& pd)
@@ -142,12 +178,24 @@ void VueOpenGL::dessine(PenduleDouble const& pd)
   matrice.translate(0.0,0.0,-pd.get_L1());
   QMatrix4x4 ref(matrice);
   matrice.scale(0.15);
-  dessineCube(matrice);
+  if(vitesse){
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // passe en mode "fil de fer"
+    dessineSphere(matrice,pd.vit1());
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // repasse en mode "plein"
+  }else{
+    dessineCube(matrice);
+  }
   matrice=ref;
   angleEuler(0,pd.get_angleNutation2(true),0,matrice);
   matrice.translate(0.0,0.0,-pd.get_L2());
   matrice.scale(0.15);
-  dessineCube(matrice);
+  if(vitesse){
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // passe en mode "fil de fer"
+    dessineSphere(matrice,pd.vit2());
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // repasse en mode "plein"
+  }else{
+    dessineCube(matrice);
+  }
 
 }
 
@@ -170,7 +218,13 @@ void VueOpenGL::dessine(PenduleRessort const& pr)
   angleEuler(pr.get_anglePrecession(true),pr.get_angleNutation(true),0,matrice);
   matrice.translate(0.0,0.0,-pr.get_L());
   matrice.scale(0.15);
-  dessineCube(matrice);
+  if(vitesse){
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // passe en mode "fil de fer"
+    dessineSphere(matrice,pr.vitesse());
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // repasse en mode "plein"
+  }else{
+    dessineCube(matrice);
+  }
 }
 
 // ======================================================================
@@ -236,7 +290,9 @@ void VueOpenGL::initializePosition()
 {
   // position initiale
   matrice_vue.setToIdentity();
-  matrice_vue.translate(0.0, 0.0, -4.0);
+  //rotate(30,1,0,0);
+  translate(0.0, 0.0, -4.0);
+  //rotate(30,0,0,1);
 }
 
 // ======================================================================
@@ -259,6 +315,11 @@ void VueOpenGL::rotate(double angle, double dir_x, double dir_y, double dir_z)
   QMatrix4x4 rotation_supplementaire;
   rotation_supplementaire.rotate(angle, dir_x, dir_y, dir_z);
   matrice_vue = rotation_supplementaire * matrice_vue;
+}
+
+void VueOpenGL::changeDessin(){
+  if(vitesse)vitesse=false;
+  else vitesse=true;
 }
 
 // ======================================================================
@@ -341,10 +402,14 @@ void VueOpenGL::dessineAxes (QMatrix4x4 const& point_de_vue, bool en_couleur)
 }
 
 void VueOpenGL::dessineSphere (QMatrix4x4 const& point_de_vue,
-                               double rouge, double vert, double bleu)
-{
+                               double rouge, double vert, double bleu){
   prog.setUniformValue("vue_modele", matrice_vue * point_de_vue);
   prog.setAttributeValue(CouleurId, rouge, vert, bleu);  // met la couleur
+  sphere.draw(prog, SommetId);                           // dessine la sphère
+}
+void VueOpenGL::dessineSphere (QMatrix4x4 const& point_de_vue, double vit){
+  prog.setUniformValue("vue_modele", matrice_vue * point_de_vue);
+  prog.setAttributeValue(CouleurId, 10.0/(vit+4)+0.5, 10.0/(vit+4)-1.5,10.0/(vit+4)-0.5);  // met la couleur
   sphere.draw(prog, SommetId);                           // dessine la sphère
 }
 

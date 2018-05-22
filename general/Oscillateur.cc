@@ -88,7 +88,15 @@ void Oscillateur::set_Q(unsigned int n, double newValeur){
   }
 }
 
+Vecteur Oscillateur::PQ() const{
+  return Vecteur({P.get_coord(1),Q.get_coord(1)});
+}
 
+void Oscillateur::phase(Integrateur const& integrat) const{
+  if(support!=nullptr){
+    support->phase(*this,integrat);
+  }
+}
 
 // permet l'affichage d'un oscillateur de façon standardisée //
 ostream& Oscillateur::affiche(ostream& sortie) const{
@@ -374,6 +382,10 @@ Vecteur3D PenduleDouble::pos2()const{
   return retour;
 }
 
+double PenduleDouble::vit2() const{
+  return sqrt(pow(L1*Q.get_coord(1),2)+pow(L2*Q.get_coord(2),2)+2*cos(P.get_coord(1)-P.get_coord(2))*L1*L2*Q.get_coord(1)*Q.get_coord(2));
+}
+
 double PenduleDouble::get_angleNutation(bool degre) const{
   double angle(P.get_coord(1));
   if(degre){angle*=180.0/M_PI;}
@@ -541,6 +553,10 @@ Vecteur3D Chariot::posC()const{
 Vecteur3D Chariot::posP()const{
   Vecteur3D retour(posC()+L*sin(P.get_coord(2))*a+L*cos(P.get_coord(2))*(~g));
   return retour;
+}
+
+double Chariot::vitP() const{
+  return sqrt(pow(Q.get_coord(1),2)+2*Q.get_coord(1)*cos(P.get_coord(2))*L*Q.get_coord(2)+pow(L*Q.get_coord(2),2));
 }
 
 double Chariot::get_angleNutation(bool degre) const {
