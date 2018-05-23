@@ -11,6 +11,7 @@
 void VueOpenGL::dessine(Systeme const& sys)
 {
   dessineAxes();
+  dessineGrille();
   for(auto const& osc : sys.get_col()){
     osc->dessine();
   }
@@ -38,12 +39,8 @@ void VueOpenGL::dessine(Pendule const& p)
 
   // dessin du pendule (masse)
   matrice.translate(O.x(),O.y(),O.z());
-  /*matrice.rotate(axe.norme(),0,0,axe.z());
-  matrice.rotate(p.get_angle(true),0,-1,0); */
-  //matrice.rotate(p.get_angle(true), axe_rot.x(), axe_rot.y(), axe_rot.z());
   angleEuler(p.get_anglePrecession(true),p.get_angleNutation(true),0,matrice);
   matrice.translate(0.0,0.0,-p.get_L());
-  //matrice.rotate(90,1,0,0);
   matrice.scale(0.15);
   if(vitesse){
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // passe en mode "fil de fer"
@@ -52,6 +49,7 @@ void VueOpenGL::dessine(Pendule const& p)
   }else{
     dessineCube(matrice);
   }
+
 }
 
 void VueOpenGL::dessine(Ressort const& r)
@@ -59,7 +57,6 @@ void VueOpenGL::dessine(Ressort const& r)
   QMatrix4x4 matrice;
   Vecteur3D O(r.get_O());
   Vecteur3D pos(r.position());
-  Vecteur3D axe(r.get_a());
 
   // Dessin du ressort
   prog.setUniformValue("vue_modele", matrice_vue * matrice);
@@ -138,7 +135,6 @@ void VueOpenGL::dessine(Chariot const& c){
   if(vitesse){
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // passe en mode "fil de fer"
     dessineSphere(matrice,c.vitC());
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // repasse en mode "plein"
   }else{
     dessineCube(matrice);
   }
@@ -147,7 +143,6 @@ void VueOpenGL::dessine(Chariot const& c){
   matrice.translate(0.0,0.0,-c.get_L());
   matrice.scale(0.15);
   if(vitesse){
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // passe en mode "fil de fer"
     dessineSphere(matrice,c.vitP());
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // repasse en mode "plein"
   }else{
@@ -181,7 +176,6 @@ void VueOpenGL::dessine(PenduleDouble const& pd)
   if(vitesse){
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // passe en mode "fil de fer"
     dessineSphere(matrice,pd.vit1());
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // repasse en mode "plein"
   }else{
     dessineCube(matrice);
   }
@@ -190,13 +184,11 @@ void VueOpenGL::dessine(PenduleDouble const& pd)
   matrice.translate(0.0,0.0,-pd.get_L2());
   matrice.scale(0.15);
   if(vitesse){
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // passe en mode "fil de fer"
     dessineSphere(matrice,pd.vit2());
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // repasse en mode "plein"
   }else{
     dessineCube(matrice);
   }
-
 }
 
 void VueOpenGL::dessine(PenduleRessort const& pr)
@@ -216,6 +208,7 @@ void VueOpenGL::dessine(PenduleRessort const& pr)
   // dessin du pendule (masse)
   matrice.translate(O.x(),O.y(),O.z());
   angleEuler(pr.get_anglePrecession(true),pr.get_angleNutation(true),0,matrice);
+  dessineAxes(matrice, false); // pour mieux visualiser le plan dans lequel le pendule-ressort oscille
   matrice.translate(0.0,0.0,-pr.get_L());
   matrice.scale(0.15);
   if(vitesse){
@@ -290,9 +283,9 @@ void VueOpenGL::initializePosition()
 {
   // position initiale
   matrice_vue.setToIdentity();
-  //rotate(30,1,0,0);
+  rotate(-35,0,0,1);
+  rotate(-45,1,0,0);
   translate(0.0, 0.0, -4.0);
-  //rotate(30,0,0,1);
 }
 
 // ======================================================================
@@ -401,20 +394,37 @@ void VueOpenGL::dessineAxes (QMatrix4x4 const& point_de_vue, bool en_couleur)
   glEnd();
 }
 
+void VueOpenGL::dessineGrille(double hauteur, double largeur, int n, QMatrix4x4 const& point_de_vue){
+  prog.setUniformValue("vue_modele", matrice_vue * point_de_vue);
+  glBegin(GL_LINES);
+  prog.setAttributeValue(CouleurId, 0.25, 0.25, 0.25);
+  double h(largeur/n);
+  for(int i(-n+1);i<=n-1;i++){
+    prog.setAttributeValue(SommetId, i*h, -largeur, hauteur);
+    prog.setAttributeValue(SommetId, i*h,  largeur, hauteur);
+    prog.setAttributeValue(SommetId, -largeur, i*h, hauteur);
+    prog.setAttributeValue(SommetId,  largeur, i*h, hauteur);
+  }
+  glEnd();
+}
+
 void VueOpenGL::dessineSphere (QMatrix4x4 const& point_de_vue,
                                double rouge, double vert, double bleu){
   prog.setUniformValue("vue_modele", matrice_vue * point_de_vue);
   prog.setAttributeValue(CouleurId, rouge, vert, bleu);  // met la couleur
   sphere.draw(prog, SommetId);                           // dessine la sphère
 }
+
+//dessine une sphere et la colorie en fonction de sa vitesse : blanc = lent --> rouge foncé = rapide
 void VueOpenGL::dessineSphere (QMatrix4x4 const& point_de_vue, double vit){
   prog.setUniformValue("vue_modele", matrice_vue * point_de_vue);
   prog.setAttributeValue(CouleurId, 10.0/(vit+4)+0.5, 10.0/(vit+4)-1.5,10.0/(vit+4)-0.5);  // met la couleur
   sphere.draw(prog, SommetId);                           // dessine la sphère
 }
 
+// fonction externe, modifie la matrice par une rotation selon les angles d'Euler
 void angleEuler(double a, double b, double c, QMatrix4x4& matrice){
-  matrice.rotate(a,0,0,1);
-  matrice.rotate(b,1,0,0);
-  matrice.rotate(c,0,0,1);
+  matrice.rotate(a,0,0,1); // précession
+  matrice.rotate(b,1,0,0); // nutation
+  matrice.rotate(c,0,0,1); // rotation propre
 }
