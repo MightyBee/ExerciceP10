@@ -235,7 +235,31 @@ private:
   double m;
   double L;
   double k;
-
-
-
 };
+
+/*class PendulesRelies : public Oscillateur{
+public:
+  //constructeur - destructeur
+  explicit PendulesRelies(const std::initializer_list<double>& liP={0,0},
+                          const std::initializer_list<double>& liQ={0,0},
+                          const Vecteur3D& a=Vecteur3D(1,0,0),
+                          const Vecteur3D& O=Vecteur3D(0,0,0),
+                          double masse1=1.0, double longueur1=1.0, double raideur=1.0,
+                          double masse2=1.0, double longueur2=1.0, double distance=1.0,
+                          double dist_accroche1, double dist_accroche2,
+                          SupportADessin* support=nullptr);
+  virtual ~PendulesRelies(){}
+
+  //autres fonctions
+  virtual Vecteur f(const double& t) const override;
+
+private:
+  double m1;
+  double m2;
+  double k;
+  double d;
+  double L1;
+  double L2;
+  double a1;
+  double a2;
+};*/
