@@ -13,9 +13,9 @@ class Integrateur;
 
 class SupportADessin{
  public:
-
+  //destructeur
   virtual ~SupportADessin() {}
-
+  //méthodes pour dessiner les différents oscillateurs
   virtual void dessine(Systeme const&) = 0;
   virtual void dessine(Pendule const&) = 0;
   virtual void dessine(Ressort const&) = 0;

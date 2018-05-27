@@ -61,7 +61,7 @@ unique_ptr<IntegrateurRungeKutta> IntegrateurRungeKutta::clone() const{
   return unique_ptr<IntegrateurRungeKutta>(new IntegrateurRungeKutta(*this));
 }
 
-
+// spécialisation de la méthode "evolue()" de la super-classe, avance d'un pas de temps avec la méthode d'intégration Runge-Kutta
 void IntegrateurRungeKutta::evolue(Oscillateur& osc, double dt, double t) const{
   Vecteur P(osc.get_P());
   Vecteur Q(osc.get_Q());
