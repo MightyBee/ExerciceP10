@@ -5,7 +5,7 @@
 // super-classe Integrateur, abstraite (pas de méthodes d'intégration numérique spécifiées)
 class Integrateur{
   public:
-
+    // destructeur
     virtual ~Integrateur(){}
 
     virtual std::unique_ptr<Integrateur> copie() const = 0;
@@ -16,6 +16,7 @@ class Integrateur{
 // classe héritée d'Integrateur, (méthode d'intégration numérique : Euler-Cromer)
 class IntegrateurEulerCromer : public Integrateur{
   public:
+    //destructeur
     virtual ~IntegrateurEulerCromer(){}
 
     std::unique_ptr<IntegrateurEulerCromer> clone() const;
@@ -27,9 +28,10 @@ class IntegrateurEulerCromer : public Integrateur{
 };
 
 
-
+// classe héritée d'Integrateur, (méthode d'intégration numérique : Newmark)
 class IntegrateurNewmark : public Integrateur{
   public:
+    //destructeur
     virtual ~IntegrateurNewmark(){}
 
     std::unique_ptr<IntegrateurNewmark> clone() const;
@@ -42,9 +44,10 @@ class IntegrateurNewmark : public Integrateur{
 
 
 
-
+// classe héritée d'Integrateur, (méthode d'intégration numérique : Runge-Kutta)
 class IntegrateurRungeKutta : public Integrateur{
   public:
+    //destructeur
     virtual ~IntegrateurRungeKutta(){}
 
     std::unique_ptr<IntegrateurRungeKutta> clone() const;

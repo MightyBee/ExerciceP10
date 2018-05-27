@@ -3,10 +3,11 @@
 #include <string>
 using namespace std;
 
+//constructeur
 Systeme::Systeme(SupportADessin* sup, Integrateur const& integrat, double t)
                 : Dessinable(sup), integrateur(integrat.copie()), temps(t), collection(0) {}
 
-
+// initialise un système
 void Systeme::initialize(){
   int choice(0);
   cout << endl << " --- INITIALISATION DU SYSTEME --- " << endl;
@@ -120,11 +121,13 @@ void Systeme::initialize(){
   }while(choice!=0);
 }
 
+// ajout d'un oscillateur
 void Systeme::add(Oscillateur const& osc){
   collection.push_back(osc.copie());
   collection.back()->set_sup(support);
 }
 
+// evolution du système avec l'intégrateur
 void Systeme::evolue(double dt){
   for(auto& osc : collection){
     integrateur->evolue(*osc, dt, temps);

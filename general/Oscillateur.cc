@@ -33,10 +33,13 @@ Vecteur Oscillateur::get_P() const{return P;}
 // retourne le vecteur des "vitesses" de l'oscillateur //
 Vecteur Oscillateur::get_Q() const{return Q;}
 
+// retourne le vecteur de l'axe
 Vecteur3D Oscillateur::get_a() const{return a;}
 
+// retourne le vecteur de l'origine
 Vecteur3D Oscillateur::get_O() const{return O;}
 
+//retourne l'angle de précession
 double Oscillateur::get_anglePrecession(bool degre) const{
   double angle(0);
   if(a.x()!=0 or a.y()!=0){angle=Vecteur3D(1,0,0).angle(a.projXY());}
@@ -170,13 +173,14 @@ Vecteur3D Pendule::position() const {
   return retour;
 }
 
-
+// retourne l'angle de nutation
 double Pendule::get_angleNutation(bool degre) const{
   double angle(P.get_coord(1));
   if(degre){angle*=180.0/M_PI;}
   return angle;
 }
 
+//retourne l'angle de rotation propre
 double Pendule::get_angleRotPro(bool degre) const{
   double angle(0);
   if(degre){angle*=180.0/M_PI;}
@@ -239,7 +243,7 @@ Vecteur3D Ressort::position()const{
   return retour;
 }
 
-
+// retourne l'angle de nutation
 double Ressort::get_angleNutation(bool degre) const{
   double angle(M_PI/2);
   if(a.x()!=0 or a.y()!=0){angle=a.angle(a.projXY());}
@@ -248,6 +252,7 @@ double Ressort::get_angleNutation(bool degre) const{
   return angle;
 }
 
+// retourne l'angle de rotation propre
 double Ressort::get_angleRotPro(bool degre) const{
   double angle(0);
   if(degre){angle*=180.0/M_PI;}
@@ -299,18 +304,21 @@ Vecteur Torsion::f(const double& t) const{
   return retour;
 }
 
+// retourne l'angle de nutation
 double Torsion::get_angleNutation(bool degre) const{
   double angle(0);
   if(degre){angle*=180.0/M_PI;}
   return angle;
 }
 
+// retourne l'angle de rotattion propre
 double Torsion::get_angleRotPro(bool degre) const{
   double angle(P.get_coord(1));
   if(degre){angle*=180.0/M_PI;}
   return angle;
 }
 
+//permet l'affichage d'un oscillateur de façon standarisée
 ostream& Torsion::affiche(ostream& sortie) const{
   sortie << "# Torsion :" << endl;
   sortie << P << " # parametre (angle)" << endl;
@@ -382,22 +390,26 @@ Vecteur3D PenduleDouble::pos2()const{
   return retour;
 }
 
+//vittesse du deuxième pendule
 double PenduleDouble::vit2() const{
   return sqrt(pow(L1*Q.get_coord(1),2)+pow(L2*Q.get_coord(2),2)+2*cos(P.get_coord(1)-P.get_coord(2))*L1*L2*Q.get_coord(1)*Q.get_coord(2));
 }
 
+// retourne l'angle de nutation
 double PenduleDouble::get_angleNutation(bool degre) const{
   double angle(P.get_coord(1));
   if(degre){angle*=180.0/M_PI;}
   return angle;
 }
 
+// retourne le deuxième angle de nutation
 double PenduleDouble::get_angleNutation2(bool degre) const{
   double angle(P.get_coord(2)-P.get_coord(1));
   if(degre){angle*=180.0/M_PI;}
   return angle;
 }
 
+//retourne l'angle de rotation propre
 double PenduleDouble::get_angleRotPro(bool degre) const{
   double angle(0);
   if(degre){angle*=180.0/M_PI;}
@@ -459,7 +471,7 @@ Vecteur3D PenduleRessort::position() const {
   return retour;
 }
 
-
+// retourne l'angle de nutation
 double PenduleRessort::get_angleNutation(bool degre) const{
   double angle(0);
   double x(P.get_coord(1)), z(-P.get_coord(2));
@@ -470,6 +482,7 @@ double PenduleRessort::get_angleNutation(bool degre) const{
   return angle;
 }
 
+// retourne l'angle de rotation propre
 double PenduleRessort::get_angleRotPro(bool degre) const{
   double angle(0);
   if(degre){angle*=180.0/M_PI;}
@@ -477,7 +490,7 @@ double PenduleRessort::get_angleRotPro(bool degre) const{
 }
 
 
-// permet l'affichage d'un oscillateur de façon standardisée //
+// permet l'affichage d'un oscillateur de façon standardisée
 ostream& PenduleRessort::affiche(ostream& sortie) const{
   sortie << "# PenduleRessort :" << endl;
   sortie << P << " # parametre (x et y)" << endl;
@@ -491,7 +504,7 @@ ostream& PenduleRessort::affiche(ostream& sortie) const{
 ###                    METHODES DE LA CLASSE Chariot                         ###
 ###                                                                          ###
 ##############################################################################*/
-
+//Constructeur
 Chariot::Chariot(const initializer_list<double>& liP,
                  const initializer_list<double>& liQ,
                  const Vecteur3D& a, const Vecteur3D& O,
@@ -527,7 +540,7 @@ Chariot::Chariot(const initializer_list<double>& liP,
     }
   }
 
-
+// fonction d'évolution
 Vecteur Chariot::f(const double& t) const {
   Vecteur retour (2);
   double P1(P.get_coord(1));
@@ -545,32 +558,38 @@ Vecteur Chariot::f(const double& t) const {
   return retour;
 }
 
+// retourne la position du chariot
 Vecteur3D Chariot::posC()const{
   Vecteur3D retour(O+P.get_coord(1)*a);
   return retour;
 }
 
+// retourne la position du pendule
 Vecteur3D Chariot::posP()const{
   Vecteur3D retour(posC()+L*sin(P.get_coord(2))*a+L*cos(P.get_coord(2))*(~g));
   return retour;
 }
 
+// vitesse du pendule
 double Chariot::vitP() const{
   return sqrt(pow(Q.get_coord(1),2)+2*Q.get_coord(1)*cos(P.get_coord(2))*L*Q.get_coord(2)+pow(L*Q.get_coord(2),2));
 }
 
+// retourne l'angle de nutation
 double Chariot::get_angleNutation(bool degre) const {
   double angle(P.get_coord(2));
   if(degre){angle*=180.0/M_PI;}
   return angle;
 }
 
+// retourne l'angle de rotation propre
 double Chariot::get_angleRotPro(bool degre) const {
   double angle(0);
   if(degre){angle*=180.0/M_PI;}
   return angle;
 }
 
+ // permet l'affichage d'un oscillateur de facon standarisée 
 ostream& Chariot::affiche(std::ostream& sortie) const {
   sortie << "# Chariot :" << endl;
   sortie << P << " # parametre (distance de l'origine du chariot et angle du pendule)" << endl;
