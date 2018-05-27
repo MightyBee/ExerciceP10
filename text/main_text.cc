@@ -11,7 +11,7 @@ int main(){
     TextViewer TV(cout);
     IntegrateurEulerCromer euler;
     Systeme syst(&TV,euler);
-    Pendule p({M_PI/2});
+    PenduleDouble p({M_PI/2,0});
     syst.add(p);
     Ressort r1({0.18}, {0}, {0.8,0,0.2}, {0,0,0}, 1, 0.25, 0.1, &TV);
     Ressort r2({0.18}, {0}, {0.8,0,0.2}, {0,0,0}, 2, 0.25, 0.1);

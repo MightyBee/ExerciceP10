@@ -19,7 +19,6 @@ class IntegrateurEulerCromer : public Integrateur{
     virtual ~IntegrateurEulerCromer(){}
 
     std::unique_ptr<IntegrateurEulerCromer> clone() const;
-
     virtual std::unique_ptr<Integrateur> copie() const override{return clone();}
 
     // autres méthodes
@@ -33,7 +32,6 @@ class IntegrateurNewmark : public Integrateur{
     virtual ~IntegrateurNewmark(){}
 
     std::unique_ptr<IntegrateurNewmark> clone() const;
-
     virtual std::unique_ptr<Integrateur> copie() const override{return clone();}
 
     // autres méthodes
@@ -48,7 +46,6 @@ class IntegrateurRungeKutta : public Integrateur{
     virtual ~IntegrateurRungeKutta(){}
 
     std::unique_ptr<IntegrateurRungeKutta> clone() const;
-
     virtual std::unique_ptr<Integrateur> copie() const override{return clone();}
 
     // autres méthodes

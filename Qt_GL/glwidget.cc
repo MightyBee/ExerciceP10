@@ -8,6 +8,7 @@
 // ======================================================================
 void GLWidget::add(Oscillateur const& osc){
   s.add(osc);
+  phases.push_back(nullptr);
 }
 
 void GLWidget::initializeGL()
@@ -46,6 +47,10 @@ void GLWidget::paintGL()
   s.dessine();
 }
 
+// ======================================================================
+void GLWidget::closeEvent (QCloseEvent *event){
+  for(size_t i(1);i<=phases.size();++i) phase(i, false, true);
+}
 
 // ======================================================================
 void GLWidget::keyPressEvent(QKeyEvent* event)
@@ -113,45 +118,66 @@ void GLWidget::keyPressEvent(QKeyEvent* event)
     pause();
     break;
 
+  case Qt::Key_F1:
+    s.changeIntegrateur(1);
+    break;
+
+  case Qt::Key_F2:
+    s.changeIntegrateur(2);
+    break;
+
+  case Qt::Key_F3:
+    s.changeIntegrateur(3);
+    break;
+
   case Qt::Key_V:
     vue.changeDessin();
     break;
 
-  case Qt::Key_P:
-    pause();
-    s.phase();
-    pause();
-    break;
-
   case Qt::Key_1:
-    pause();
-    s.phase(1);
-    pause();
+    phase(1);
     break;
 
   case Qt::Key_2:
-    pause();
-    s.phase(2);
-    pause();
+    phase(2);
     break;
 
   case Qt::Key_3:
-    pause();
-    s.phase(3);
-    pause();
+    phase(3);
     break;
 
   case Qt::Key_4:
-    pause();
-    s.phase(4);
-    pause();
+    phase(4);
     break;
 
   case Qt::Key_5:
-    pause();
-    s.phase(5);
-    pause();
+    phase(5);
     break;
+
+  case Qt::Key_6:
+    phase(6);
+    break;
+
+  case Qt::Key_7:
+    phase(7);
+    break;
+
+  case Qt::Key_8:
+    phase(8);
+    break;
+
+  case Qt::Key_9:
+    phase(9);
+    break;
+
+  case Qt::Key_0:
+    for(size_t i(1);i<=phases.size();++i) phase(i, false, true);
+    break;
+
+  case Qt::Key_O:
+    for(size_t i(1);i<=phases.size();++i) phase(i, true);
+    break;
+
 
   };
 
@@ -166,6 +192,9 @@ void GLWidget::timerEvent(QTimerEvent* event)
   double dt = chronometre.restart() / 1000.0;
 
   s.evolue(dt);
+  for(size_t i(0);i<phases.size();i++){
+    if(phases[i]!=nullptr) phases[i]->add({s.get_col()[i]->PQ().get_coord(1),s.get_col()[i]->PQ().get_coord(2),0});
+  }
   updateGL();
 }
 
@@ -182,6 +211,32 @@ void GLWidget::pause()
     timerId = 0;
   }
 }
+
+void GLWidget::phase(int i, bool openAll, bool closeAll){
+  --i;
+  if(i>=0 and i<phases.size()){
+    if(phases[i]!=nullptr and not phases[i]->isVisible()) phases[i].reset(nullptr);
+    if(phases[i]!=nullptr and not openAll){
+      phases[i]->hide();
+      phases[i].reset(nullptr);
+    } else if(phases[i]==nullptr and not closeAll){
+      phases[i].reset(new PWidget());
+      phases[i]->show();
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ======================================================================
 void PhaseWidget::initializeGL(){
@@ -241,4 +296,92 @@ void PhaseWidget::paintGL()
     integrat->evolue(*o,dt,t);
   }
   glEnd();
+}
+
+
+
+
+
+
+
+
+
+// ======================================================================
+void PWidget::initializeGL(){
+  prog.addShaderFromSourceFile(QOpenGLShader::Vertex,   ":/vertex_shader.glsl");
+  prog.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fragment_shader.glsl");
+
+  prog.bindAttributeLocation("sommet",  SommetId);
+  prog.bindAttributeLocation("couleur", CouleurId);
+
+  prog.link();
+
+  prog.bind();
+
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_CULL_FACE);
+}
+
+// ======================================================================
+void PWidget::resizeGL(int width, int height)
+{
+  glViewport(10, 10, width-20, height-20); // on laisse une marge de 10px de chaque coté
+}
+
+// ======================================================================
+void PWidget::paintGL()
+{
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  QMatrix4x4 matrice;
+  prog.setUniformValue("vue_modele", matrice);              // On met la matrice identité dans vue_modele
+
+
+  /* Change de matrice de projection adpatée aux zoom du graph */
+  matrice.setToIdentity();
+  matrice.ortho(minX, maxX, minX/ratio(), maxX/ratio(), -10.0, 10.0);
+  prog.setUniformValue("projection", matrice);
+
+  /* Dessine les axes */
+  prog.setAttributeValue(CouleurId, 0.0, 0.0, 1.0);
+  glBegin(GL_LINES);                                        // la primitive LINES dessine une ligne par paire de points (n/2 lignes)
+  prog.setAttributeValue(SommetId, minX, 0.0, -1.0);        // le -1.0 dans la composante z met les axes en arrière plan
+  prog.setAttributeValue(SommetId, maxX, 0.0, -1.0);
+  for(int i(1);i<maxX or -i>minX;++i){
+    prog.setAttributeValue(SommetId,   i,-0.1, -1.0);
+    prog.setAttributeValue(SommetId,   i, 0.1, -1.0);
+    prog.setAttributeValue(SommetId,  -i,-0.1, -1.0);
+    prog.setAttributeValue(SommetId,  -i, 0.1, -1.0);
+    prog.setAttributeValue(SommetId,-0.1,   i, -1.0);
+    prog.setAttributeValue(SommetId, 0.1,   i, -1.0);
+    prog.setAttributeValue(SommetId,-0.1,  -i, -1.0);
+    prog.setAttributeValue(SommetId, 0.1,  -i, -1.0);
+  }
+  prog.setAttributeValue(SommetId, 0.0, minX/ratio(), -1.0);
+  prog.setAttributeValue(SommetId, 0.0, maxX/ratio(), -1.0);
+  glEnd();
+
+  /* Dessine les phases */
+  prog.setAttributeValue(CouleurId, 0.0, 1.0, 0.0);
+  glBegin(GL_LINE_STRIP);                                   // la primitive LINE_STRIP ne referme par le tracé (n-1 lignes)
+  for(auto const& point : phases){
+    prog.setAttributeValue(SommetId, point[0], point[1], 0.0);
+  }
+  glEnd();
+  prog.setAttributeValue(CouleurId, 1.0, 0.0, 0.1);
+  glPointSize(5);
+  glBegin(GL_POINTS);
+  prog.setAttributeValue(SommetId, phases.back()[0], phases.back()[1], 0.0);
+  glEnd();
+}
+
+
+void PWidget::add(std::array<double,3> const& pqt){
+  if(phases.size()>=1000000) phases.erase(phases.begin());
+  if(pqt[0]>maxX) maxX=pqt[0];
+  if(pqt[0]<minX) minX=pqt[0];
+  if(pqt[1]>maxX/ratio()) maxX=ratio()*pqt[1];
+  if(pqt[1]<minX/ratio()) minX=ratio()*pqt[1];
+  phases.push_back(pqt);
+  updateGL();
 }

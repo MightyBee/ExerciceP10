@@ -153,6 +153,20 @@ void Systeme::phase(unsigned int n) const{
   }
 }
 
+void Systeme::changeIntegrateur(int i){
+  switch(i){
+    case 1:
+      integrateur.reset(new IntegrateurEulerCromer());
+      break;
+    case 2:
+      integrateur.reset(new IntegrateurNewmark());
+      break;
+    case 3:
+      integrateur.reset(new IntegrateurRungeKutta());
+      break;
+  }
+}
+
 // permet l'affichage d'un systeme de façon standardisée //
 ostream& Systeme::affiche(ostream& sortie) const{
   sortie << "# Systeme :" << endl << endl;

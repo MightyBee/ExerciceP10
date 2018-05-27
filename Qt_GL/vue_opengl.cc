@@ -8,8 +8,7 @@
 
 
 // ======================================================================
-void VueOpenGL::dessine(Systeme const& sys)
-{
+void VueOpenGL::dessine(Systeme const& sys){
   dessineAxes();
   dessineGrille();
   for(auto const& osc : sys.get_col()){
@@ -23,8 +22,7 @@ void VueOpenGL::phase(Oscillateur const& o, Integrateur const& integrat, double 
   //TODO le delete du pointeur ?
 }
 
-void VueOpenGL::dessine(Pendule const& p)
-{
+void VueOpenGL::dessine(Pendule const& p){
   QMatrix4x4 matrice;
   Vecteur3D O(p.get_O());
   Vecteur3D pos(p.position());
@@ -52,8 +50,7 @@ void VueOpenGL::dessine(Pendule const& p)
 
 }
 
-void VueOpenGL::dessine(Ressort const& r)
-{
+void VueOpenGL::dessine(Ressort const& r){
   QMatrix4x4 matrice;
   Vecteur3D O(r.get_O());
   Vecteur3D pos(r.position());
@@ -80,8 +77,7 @@ void VueOpenGL::dessine(Ressort const& r)
   }
 }
 
-void VueOpenGL::dessine(Torsion const& t)
-{
+void VueOpenGL::dessine(Torsion const& t){
   QMatrix4x4 matrice;
   Vecteur3D O(t.get_O());
 
@@ -150,8 +146,7 @@ void VueOpenGL::dessine(Chariot const& c){
   }
 }
 
-void VueOpenGL::dessine(PenduleDouble const& pd)
-{
+void VueOpenGL::dessine(PenduleDouble const& pd){
   QMatrix4x4 matrice;
   Vecteur3D O(pd.get_O());
   Vecteur3D pos1(pd.pos1());
@@ -191,8 +186,7 @@ void VueOpenGL::dessine(PenduleDouble const& pd)
   }
 }
 
-void VueOpenGL::dessine(PenduleRessort const& pr)
-{
+void VueOpenGL::dessine(PenduleRessort const& pr){
   QMatrix4x4 matrice;
   Vecteur3D O(pr.get_O());
   Vecteur3D pos(pr.position());
@@ -221,8 +215,7 @@ void VueOpenGL::dessine(PenduleRessort const& pr)
 }
 
 // ======================================================================
-void VueOpenGL::init()
-{
+void VueOpenGL::init(){
   /* Initialise notre vue OpenGL.
    * Dans cet exemple, nous créons et activons notre shader.
    *
@@ -279,18 +272,16 @@ void VueOpenGL::init()
 }
 
 // ======================================================================
-void VueOpenGL::initializePosition()
-{
+void VueOpenGL::initializePosition(){
   // position initiale
   matrice_vue.setToIdentity();
-  rotate(-35,0,0,1);
-  rotate(-45,1,0,0);
-  translate(0.0, 0.0, -4.0);
+  rotate(-38.66,0,0,1);
+  rotate(-65,1,0,0);
+  translate(0.0, 0.0, 3.0);
 }
 
 // ======================================================================
-void VueOpenGL::translate(double x, double y, double z)
-{
+void VueOpenGL::translate(double x, double y, double z){
   /* Multiplie la matrice de vue par LA GAUCHE.
    * Cela fait en sorte que la dernière modification apportée
    * à la matrice soit appliquée en dernier (composition de fonctions).
@@ -302,8 +293,7 @@ void VueOpenGL::translate(double x, double y, double z)
 
 
 // ======================================================================
-void VueOpenGL::rotate(double angle, double dir_x, double dir_y, double dir_z)
-{
+void VueOpenGL::rotate(double angle, double dir_x, double dir_y, double dir_z){
   // Multiplie la matrice de vue par LA GAUCHE
   QMatrix4x4 rotation_supplementaire;
   rotation_supplementaire.rotate(angle, dir_x, dir_y, dir_z);
@@ -316,8 +306,7 @@ void VueOpenGL::changeDessin(){
 }
 
 // ======================================================================
-void VueOpenGL::dessineCube (QMatrix4x4 const& point_de_vue)
-{
+void VueOpenGL::dessineCube (QMatrix4x4 const& point_de_vue){
   prog.setUniformValue("vue_modele", matrice_vue * point_de_vue);
 
   glBegin(GL_QUADS);
@@ -366,8 +355,7 @@ void VueOpenGL::dessineCube (QMatrix4x4 const& point_de_vue)
   glEnd();
 }
 
-void VueOpenGL::dessineAxes (QMatrix4x4 const& point_de_vue, bool en_couleur)
-{
+void VueOpenGL::dessineAxes (QMatrix4x4 const& point_de_vue, bool en_couleur){
   prog.setUniformValue("vue_modele", matrice_vue * point_de_vue);
 
   glBegin(GL_LINES);

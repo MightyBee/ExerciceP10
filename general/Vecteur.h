@@ -23,14 +23,12 @@ class Vecteur {
 		Vecteur& operator*=(const double& lambda); // multiplie l'instance courante par un scalaire (double)
 		Vecteur& operator/=(const double& lambda); // divise l'instance courante par un scalaire (double)
 
-
 		//accesseurs
 		double get_coord(unsigned int n) const; // accès à un paramètre
 		size_t taille() const; // retourne la dim du vecteur
 
 		//manipulateurs
 		void augmente(double newCoord=0); // ajoute une dimension au vecteur et affecte une valeur pour cette dimension
-		virtual bool possible() const; // retourne s'il est possible d'ajouter une dimension au vecteur
 		void set_coord(unsigned int n, double newValeur); // modifie la n-ieme coordonnee du vecteur
 
 		//autres operations
@@ -39,6 +37,8 @@ class Vecteur {
 		double norme2() const; // retourne la norme au carré de l'instance courante
 
 	protected:
+		//méthodes utilitaires
+		virtual bool possible() const; // retourne s'il est possible d'ajouter une dimension au vecteur
 		//attributs
 		std::vector<double> coord; // tableau dynamique contenant les coordonees du vecteur
 };
@@ -61,7 +61,7 @@ class Vecteur3D : public Vecteur{
 		explicit Vecteur3D(const Vecteur& v);
 		Vecteur3D(const double& x, const double& y, const double& z); // construit un vecteur 3D, avec valeurs x,y,z spécifiées
 
-		virtual bool possible() const override; // retourne s'il est possible d'ahjouter une dimension au vecteur
+
 		Vecteur3D operator^(const Vecteur3D& v2) const; // retourne le produit vectoriel de l'instance courante avec un autre vecteur 3D
 		Vecteur3D projXY() const; // retourne la projection du vecteur sur le plan XY
 		double angle(Vecteur3D const& v2) const;
@@ -70,5 +70,8 @@ class Vecteur3D : public Vecteur{
 		double x() const{return coord[0];}
 		double y() const{return coord[1];}
 		double z() const{return coord[2];}
+	protected:
+		//méthodes utilitaires
+		virtual bool possible() const override; // retourne s'il est possible d'ahjouter une dimension au vecteur
 
 };
