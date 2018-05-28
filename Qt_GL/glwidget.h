@@ -10,6 +10,14 @@
 #include "Systeme.h"
 #include "Integrateur.h"
 
+
+/*##############################################################################
+###                                                                          ###
+###                             CLASSE PWidget                               ###
+###                                                                          ###
+##############################################################################*/
+
+// fenêtre pour afficher le portrait des phases
 class PWidget : public QGLWidget
 {
 public:
@@ -23,17 +31,25 @@ private:
   virtual void initializeGL()                  override;
   virtual void resizeGL(int width, int height) override;
   virtual void paintGL()                       override;
-
-  double ratio() const {return width()/height();}
+  // méthodes utilitaires
+  double ratio() const {return width()/height();} // retourne le ration entre la largeur et la hauteur de la fenêtre
+  // attributs //
   // Un shader OpenGL encapsulé dans une classe Qt
   QOpenGLShaderProgram prog;
 
-  std::vector<std::array<double,3>> phases;
+  std::vector<std::array<double,3>> phases; // tableau contenant [P(t),P'(t),t] pour chaque t
   double maxX;
   double minX;
-
 };
 
+
+/*##############################################################################
+###                                                                          ###
+###                            CLASSE GLWidget                               ###
+###                                                                          ###
+##############################################################################*/
+
+// fenêtre principal pour l'affichage du système
 class GLWidget : public QGLWidget
 /* La fenêtre hérite de QGLWidget ;
  * les événements (clavier, souris, temps) sont des méthodes virtuelles à redéfinir.
@@ -43,8 +59,8 @@ public:
   GLWidget(Integrateur const& integrat, QWidget* parent = nullptr)
     : QGLWidget(parent) , s(&vue, integrat), phases(s.taille()) {}
   virtual ~GLWidget() {}
-  void add(Oscillateur const& osc);
-  void initializeSysteme(){s.initialize();}
+
+  void add(Oscillateur const& osc); // permet d'ajouter un oscillateur au système
 private:
   // Les 3 méthodes clés de la classe QGLWidget à réimplémenter
   virtual void initializeGL()                  override;

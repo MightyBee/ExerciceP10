@@ -22,6 +22,8 @@ int main(){
       syst.evolue();
       syst.dessine();
     }
+    Vecteur v(3,4);
+    v[4];
     syst.phase();
   }catch(Erreur err){
     err.affiche("testSysteme.cc");

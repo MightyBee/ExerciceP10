@@ -193,7 +193,7 @@ void GLWidget::timerEvent(QTimerEvent* event)
 
   s.evolue(dt);
   for(size_t i(0);i<phases.size();i++){
-    if(phases[i]!=nullptr) phases[i]->add({s.get_col()[i]->PQ().get_coord(1),s.get_col()[i]->PQ().get_coord(2),0});
+    if(phases[i]!=nullptr) phases[i]->add({s.get_col()[i]->PQ()[0],s.get_col()[i]->PQ()[1],0});
   }
   updateGL();
 }
@@ -292,7 +292,7 @@ void PhaseWidget::paintGL()
   glBegin(GL_LINE_STRIP);                                   // la primitive LINE_STRIP ne referme par le tracé (n-1 lignes)
   std::unique_ptr<Oscillateur> o(osc->copie());
   for(double t(0.0); t<=tFinal;t+=dt){
-    prog.setAttributeValue(SommetId, o->get_P().get_coord(1), o->get_Q().get_coord(1), 0.0);
+    prog.setAttributeValue(SommetId, o->get_P()[0], o->get_Q()[0], 0.0);
     integrat->evolue(*o,dt,t);
   }
   glEnd();

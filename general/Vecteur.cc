@@ -98,13 +98,12 @@ Vecteur& Vecteur::operator/=(const double& lambda){
 
 
 //##############################  accesseurs  ################################//
-// accès à un paramètre
-double Vecteur::get_coord(unsigned int n) const{                 //TODO excption
-	if(n<=coord.size() and n>0){
-		return coord[n-1];
-	} else {
-		Erreur err("dimension", "Vecteur::get_cord(unsigned int)",
-							 "L'indice de position fourni en argument ("+to_string(n)+") n'est pas valable (attendu : entier entre 1 et "+to_string(coord.size())+"=dim(Vecteur)).");
+const double& Vecteur::operator[](unsigned int i) const{
+	if(i>=0 and i<coord.size()){
+		return coord[i];
+	}else{
+		Erreur err("dimension", "Vecteur::operator[](unsigned int) const",
+							 "L'indice de position fourni en argument ("+to_string(i)+") n'est pas valable (attendu : entier entre 0 et "+to_string(coord.size()-1)+", dim(Vecteur)="+to_string(coord.size())+").");
 		throw err;
 	}
 }
@@ -118,7 +117,7 @@ size_t Vecteur::taille() const{
 //#############################  manipulateurs  ##############################//
 // ajoute une dimension au vecteur courant, possibilité de specifier la valeur de la nouvelle composante (par défaut : 0) //
 void Vecteur::augmente(double newCoord){
-	if(possible()){coord.push_back(newCoord);} // possible polymorphique, empeche
+	if(possible()){coord.push_back(newCoord);} // possible() : polymorphique, empêche pour les Vecteur3D
 }
 
 // retourne s'il est possible d'ajouter une dimension au vecteur, toujours vrai pour un Vecteur (générique)
@@ -126,14 +125,13 @@ bool Vecteur::possible() const{
 	return true;
 }
 
-// modifie la n-ieme coordonnee du vecteur //
-void Vecteur::set_coord(unsigned int n, double newValeur){
-	if(n<=coord.size() and n>0){ //la position joue avec la dimension du vecteur
-		coord[n-1]=newValeur;
-	}
-	else{   //erreur : position trop grande par rapport a la dim du vecteur
-		Erreur err("dimension", "Vecteur::set_cord(unsigned int, double)",
-							 "L'indice de position fourni en argument ("+to_string(n)+") n'est pas valable (attendu : entier entre 1 et "+to_string(coord.size())+"=dim(Vecteur)).");
+// retourne une référence sur la n-ieme coordonnee du vecteur, permet de la modifier //
+double& Vecteur::operator[](unsigned int i){
+	if(i>=0 and i<coord.size()){
+		return coord[i];
+	}else{
+		Erreur err("dimension", "Vecteur::operator[](unsigned int)",
+							 "L'indice de position fourni en argument ("+to_string(i)+") n'est pas valable (attendu : entier entre 0 et "+to_string(coord.size()-1)+", dim(Vecteur)="+to_string(coord.size())+").");
 		throw err;
 	}
 }

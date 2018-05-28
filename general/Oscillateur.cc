@@ -64,7 +64,7 @@ void Oscillateur::set_P(const Vecteur& p){
 
 // permet de modifier un paramètre de l'Oscillateur
 void Oscillateur::set_P(unsigned int n, double newValeur){
-  try{P.set_coord(n,newValeur);}
+  try{P[n-1]=newValeur;}
   catch(Erreur err){
     err.add_fct("Oscillateur::set_P(unsigned int, double)");
     throw err;
@@ -84,7 +84,7 @@ void Oscillateur::set_Q(const Vecteur& q){
 
 // permet de modifier une vitesse de l'Oscillateur
 void Oscillateur::set_Q(unsigned int n, double newValeur){
-  try{Q.set_coord(n,newValeur);}
+  try{Q[n-1]=newValeur;}
   catch(Erreur err){
     err.add_fct("Oscillateur::set_Q(unsigned int, double)");
     throw err;
@@ -92,7 +92,7 @@ void Oscillateur::set_Q(unsigned int n, double newValeur){
 }
 
 Vecteur Oscillateur::PQ() const{
-  return Vecteur({P.get_coord(1),Q.get_coord(1)});
+  return Vecteur({P[0],Q[0]});
 }
 
 void Oscillateur::phase(Integrateur const& integrat) const{
@@ -163,19 +163,19 @@ void Pendule::dessine() const{
 
 //fonction d'évolution
 Vecteur Pendule::f(const double& t) const{
-    Vecteur retour({-(g.norme()/L)*sin(P.get_coord(1))-(frott*Q.get_coord(1)/(m*L*L))});
+    Vecteur retour({-(g.norme()/L)*sin(P[0])-(frott*Q[0]/(m*L*L))});
     return retour;
 }
 
 //retourne position d'un pendule
 Vecteur3D Pendule::position() const {
-  Vecteur3D retour(O + L*cos(P.get_coord(1))*(~g) + L*sin(P.get_coord(1))*a);
+  Vecteur3D retour(O + L*cos(P[0])*(~g) + L*sin(P[0])*a);
   return retour;
 }
 
 // retourne l'angle de nutation
 double Pendule::get_angleNutation(bool degre) const{
-  double angle(P.get_coord(1));
+  double angle(P[0]);
   if(degre){angle*=180.0/M_PI;}
   return angle;
 }
@@ -234,12 +234,12 @@ void Ressort::dessine() const{
 
 //fonction d'évolution
 Vecteur Ressort::f(const double& t) const{
-  Vecteur retour({(-(k/m)*P.get_coord(1)-(frott/m)*Q.get_coord(1)+g*a)});
+  Vecteur retour({(-(k/m)*P[0]-(frott/m)*Q[0]+g*a)});
   return retour;
 }
 //retourne la position d'un ressort
 Vecteur3D Ressort::position()const{
-  Vecteur3D retour(O + P.get_coord(1)*a);
+  Vecteur3D retour(O + P[0]*a);
   return retour;
 }
 
@@ -300,7 +300,7 @@ void Torsion::dessine() const{
 
 //fonction d'évolution
 Vecteur Torsion::f(const double& t) const{
-  Vecteur retour({-(C*P.get_coord(1)+ frott*Q.get_coord(1))/I});
+  Vecteur retour({-(C*P[0]+ frott*Q[0])/I});
   return retour;
 }
 
@@ -313,7 +313,7 @@ double Torsion::get_angleNutation(bool degre) const{
 
 // retourne l'angle de rotattion propre
 double Torsion::get_angleRotPro(bool degre) const{
-  double angle(P.get_coord(1));
+  double angle(P[0]);
   if(degre){angle*=180.0/M_PI;}
   return angle;
 }
@@ -363,16 +363,16 @@ void PenduleDouble::dessine() const{
 //fonction d'évolution
 Vecteur PenduleDouble::f(const double& t) const{
   double M(m1+m2);
-  double theta1(P.get_coord(1));
-  double theta2(P.get_coord(2));
+  double theta1(P[0]);
+  double theta2(P[1]);
   double delta(theta1-theta2);
   double a((m2*g.norme()*cos(delta)*sin(theta2)-M*g.norme()*sin(theta1)
-  -m2*L1*Q.get_coord(1)*Q.get_coord(1)*cos(delta)*sin(delta)
-  -m2*L2*Q.get_coord(2)*Q.get_coord(2)*sin(delta))/(m1*L1+m2*L1*sin(delta)*sin(delta)));
+  -m2*L1*Q[0]*Q[0]*cos(delta)*sin(delta)
+  -m2*L2*Q[1]*Q[1]*sin(delta))/(m1*L1+m2*L1*sin(delta)*sin(delta)));
 
   double b((M*g.norme()*cos(delta)*sin(theta1)-M*g.norme()*sin(theta2)
-  +m2*L2*Q.get_coord(2)*Q.get_coord(2)*cos(delta)*sin(delta)
-  +M*L1*Q.get_coord(1)*Q.get_coord(1)*sin(delta))/(m1*L2+m2*L2*sin(delta)*sin(delta)));
+  +m2*L2*Q[1]*Q[1]*cos(delta)*sin(delta)
+  +M*L1*Q[0]*Q[0]*sin(delta))/(m1*L2+m2*L2*sin(delta)*sin(delta)));
 
   Vecteur retour({a, b});
   return retour;
@@ -380,31 +380,31 @@ Vecteur PenduleDouble::f(const double& t) const{
 
 //retourne la position du 1er pendule
 Vecteur3D PenduleDouble::pos1()const{
-  Vecteur3D retour(O + L1*cos(P.get_coord(1))*(~g) + L1*sin(P.get_coord(1))*a);
+  Vecteur3D retour(O + L1*cos(P[0])*(~g) + L1*sin(P[0])*a);
   return retour;
 }
 
 //retourne la position du 2eme pendule
 Vecteur3D PenduleDouble::pos2()const{
-  Vecteur3D retour(pos1() + L2*cos(P.get_coord(2))*(~g) + L2*sin(P.get_coord(2))*a);
+  Vecteur3D retour(pos1() + L2*cos(P[1])*(~g) + L2*sin(P[1])*a);
   return retour;
 }
 
 //vittesse du deuxième pendule
 double PenduleDouble::vit2() const{
-  return sqrt(pow(L1*Q.get_coord(1),2)+pow(L2*Q.get_coord(2),2)+2*cos(P.get_coord(1)-P.get_coord(2))*L1*L2*Q.get_coord(1)*Q.get_coord(2));
+  return sqrt(pow(L1*Q[0],2)+pow(L2*Q[1],2)+2*cos(P[0]-P[1])*L1*L2*Q[0]*Q[1]);
 }
 
 // retourne l'angle de nutation
 double PenduleDouble::get_angleNutation(bool degre) const{
-  double angle(P.get_coord(1));
+  double angle(P[0]);
   if(degre){angle*=180.0/M_PI;}
   return angle;
 }
 
 // retourne le deuxième angle de nutation
 double PenduleDouble::get_angleNutation2(bool degre) const{
-  double angle(P.get_coord(2)-P.get_coord(1));
+  double angle(P[1]-P[0]);
   if(degre){angle*=180.0/M_PI;}
   return angle;
 }
@@ -467,14 +467,14 @@ Vecteur PenduleRessort::f(const double& t) const{
 
 //retourne position d'un pendule
 Vecteur3D PenduleRessort::position() const {
-  Vecteur3D retour(O + P.get_coord(1)*a + P.get_coord(2)*(~g));
+  Vecteur3D retour(O + P[0]*a + P[1]*(~g));
   return retour;
 }
 
 // retourne l'angle de nutation
 double PenduleRessort::get_angleNutation(bool degre) const{
   double angle(0);
-  double x(P.get_coord(1)), z(-P.get_coord(2));
+  double x(P[0]), z(-P[1]);
   if(x!=0 or z!=0){angle=Vecteur3D(1,0,0).angle({x,0,z});}
   if(z<0){angle*=-1;}
   if(degre){angle=angle*180.0/M_PI+90;}
@@ -543,41 +543,41 @@ Chariot::Chariot(const initializer_list<double>& liP,
 // fonction d'évolution
 Vecteur Chariot::f(const double& t) const {
   Vecteur retour (2);
-  double P1(P.get_coord(1));
-  double P2(P.get_coord(2));
-  double Q1(Q.get_coord(1));
-  double Q2(Q.get_coord(2));
+  double P1(P[0]);
+  double P2(P[1]);
+  double Q1(Q[0]);
+  double Q2(Q[1]);
 
   double A(m1+m2*pow(sin(P2), 2));
   double B(k*P1 + frott1* Q1 - m2*L*Q2*Q2*sin(P2));
   double C(g.norme()*sin(P2) + frott2*Q2);
 
-  retour.set_coord(1, 1.0/A*(-B+m2*C*cos(P2)));
-  retour.set_coord(2, 1.0/A*((B*cos(P2)-(m1+m2)*C)/L));
+  retour[0]=1.0/A*(-B+m2*C*cos(P2));
+  retour[1]=1.0/A*((B*cos(P2)-(m1+m2)*C)/L);
 
   return retour;
 }
 
 // retourne la position du chariot
 Vecteur3D Chariot::posC()const{
-  Vecteur3D retour(O+P.get_coord(1)*a);
+  Vecteur3D retour(O+P[0]*a);
   return retour;
 }
 
 // retourne la position du pendule
 Vecteur3D Chariot::posP()const{
-  Vecteur3D retour(posC()+L*sin(P.get_coord(2))*a+L*cos(P.get_coord(2))*(~g));
+  Vecteur3D retour(posC()+L*sin(P[1])*a+L*cos(P[1])*(~g));
   return retour;
 }
 
 // vitesse du pendule
 double Chariot::vitP() const{
-  return sqrt(pow(Q.get_coord(1),2)+2*Q.get_coord(1)*cos(P.get_coord(2))*L*Q.get_coord(2)+pow(L*Q.get_coord(2),2));
+  return sqrt(pow(Q[0],2)+2*Q[0]*cos(P[1])*L*Q[1]+pow(L*Q[1],2));
 }
 
 // retourne l'angle de nutation
 double Chariot::get_angleNutation(bool degre) const {
-  double angle(P.get_coord(2));
+  double angle(P[1]);
   if(degre){angle*=180.0/M_PI;}
   return angle;
 }
@@ -589,7 +589,7 @@ double Chariot::get_angleRotPro(bool degre) const {
   return angle;
 }
 
- // permet l'affichage d'un oscillateur de facon standarisée 
+ // permet l'affichage d'un oscillateur de facon standarisée
 ostream& Chariot::affiche(std::ostream& sortie) const {
   sortie << "# Chariot :" << endl;
   sortie << P << " # parametre (distance de l'origine du chariot et angle du pendule)" << endl;

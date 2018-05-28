@@ -4,6 +4,13 @@
 #include "Vecteur.h"
 #include "Dessinable.h"
 
+
+/*##############################################################################
+###                                                                          ###
+###                           CLASSE Oscillateur                             ###
+###                                                                          ###
+##############################################################################*/
+
 //super-classe Oscillateur abstraite
 class Oscillateur : public Dessinable {
   public:
@@ -15,6 +22,7 @@ class Oscillateur : public Dessinable {
                          SupportADessin* support=nullptr);
     //destructeur
     virtual ~Oscillateur(){}
+    //copie polymorphique
     virtual std::unique_ptr<Oscillateur> copie() const = 0;
     //accesseurs
     Vecteur get_P() const; // retourne le vecteur des paramètres de l'oscillateur
@@ -48,6 +56,12 @@ class Oscillateur : public Dessinable {
 std::ostream& operator<<(std::ostream& sortie, const Oscillateur& osc); // permet l'affichage standard : sortie << oscillateur;
 
 
+/*##############################################################################
+###                                                                          ###
+###                             CLASSE Pendule                               ###
+###                                                                          ###
+##############################################################################*/
+
 class Pendule :public Oscillateur{
 public:
   //constructeur
@@ -61,18 +75,19 @@ public:
                                                       ce constructeur fait office de constructeur par défaut*/
   //destructeur
   virtual ~Pendule(){}
+  //copie polymorphique
   std::unique_ptr<Pendule> clone() const;
   virtual std::unique_ptr<Oscillateur> copie() const override;
-  virtual void dessine() const override;
+  //accesseurs
+  double vitesse() const{return abs(L*Q[0]);} // retourne la vitesse
+  double get_L() const{return L;} // retourne la longueur du pendule
+  virtual double get_angleNutation(bool degre=false) const override; // retourne l'angle de nutation
+  virtual double get_angleRotPro(bool degre=false) const override; // retourne l'angle de rotation propre
   //autres opérations
   virtual Vecteur f(const double& t) const override; //fonction déterminante du mouvement du pendule
   Vecteur3D position() const; // retourne le vecteur3d indiquant la position du pendule
   virtual std::ostream& affiche(std::ostream& sortie) const override; // permet d'afficher le vecteur par composants sur un flot de sortie
-  //accesseurs
-  double vitesse() const{return abs(L*Q.get_coord(1));} // retourne la vitesse
-  double get_L() const{return L;} // retourne la longueur du pendule
-  virtual double get_angleNutation(bool degre=false) const override; // retourne l'angle de nutation
-  virtual double get_angleRotPro(bool degre=false) const override; // retourne l'angle de rotation propre
+  virtual void dessine() const override;
 
 private:
   //attributs
@@ -81,6 +96,12 @@ private:
   double frott; // coefficient de frottement
 };
 
+
+/*##############################################################################
+###                                                                          ###
+###                             CLASSE Ressort                               ###
+###                                                                          ###
+##############################################################################*/
 
 class Ressort :public Oscillateur{
 public:
@@ -106,8 +127,8 @@ public:
   virtual std::ostream& affiche(std::ostream& sortie) const override; // permet permet d'afficher le vecteur par composants sur un flot de sortie
 
   //accesseurs
-  double vitesse() const{return abs(Q.get_coord(1));} // retourne la vitesse
-  double get_x() const{return P.get_coord(1);} // retourne le paramètre
+  double vitesse() const{return abs(Q[0]);} // retourne la vitesse
+  double get_x() const{return P[0];} // retourne le paramètre
   virtual double get_angleNutation(bool degre=false) const override; // retourne l'angle de nutation
   virtual double get_angleRotPro(bool degre=false) const override; // retourne l'angle de rotation propre
 
@@ -118,6 +139,52 @@ private:
   double frott; // constante de frottement
 };
 
+
+/*##############################################################################
+###                                                                          ###
+###                             CLASSE Torsion                               ###
+###                                                                          ###
+##############################################################################*/
+
+class Torsion : public Oscillateur{
+public:
+  //constructeur
+  explicit Torsion(const std::initializer_list<double>& liP={0},
+          const std::initializer_list<double>& liQ={0},
+          const Vecteur3D& a=Vecteur3D(1,0,0),
+          const Vecteur3D& O=Vecteur3D(0,0,0),
+          double frottement = 0.0,
+          double inertie = 1.0,
+          double C_torsion = 1.0,
+          SupportADessin* support=nullptr); /*construit un pendule de torsion avec paramètre, dérivée, axe, origine,
+                                              frottement, moment d'inertie, constante de torsion et un support à dessin.
+                                              Ce constructeur fait office de constructeur par défaut*/
+  // destructeur
+  virtual ~Torsion(){}
+  std::unique_ptr<Torsion> clone() const;
+  virtual std::unique_ptr<Oscillateur> copie() const override;
+  virtual void dessine() const override;
+  //autres fonctions
+  virtual Vecteur f(const double& t) const override; // fonction déterminante du mouvement
+  virtual std::ostream& affiche(std::ostream& sortie) const override; // permet d'afficher le vecteur par composants sur un flot de sortie
+  //accesseurs
+  double vitesse() const{return abs(Q[0]);} // vittesse
+  virtual double get_angleNutation(bool degre=false) const override; // angle de nutation
+  virtual double get_angleRotPro(bool degre=false) const override; // angle de rotation propre
+
+private:
+  //attributs
+  double I; // moment d'inertie
+  double C; // constante de torsion
+  double frott; // frottement
+};
+
+
+/*##############################################################################
+###                                                                          ###
+###                             CLASSE Chariot                               ###
+###                                                                          ###
+##############################################################################*/
 
 class Chariot :public Oscillateur{
 public:
@@ -143,10 +210,10 @@ public:
   Vecteur3D posC()const; // position du chariot
   Vecteur3D posP()const; // position du pendule
   //accesseurs
-  double vitC() const{return abs(Q.get_coord(1));} //vitesse du chariot
+  double vitC() const{return abs(Q[0]);} //vitesse du chariot
   double vitP() const; // vitesse du pendule
   double get_L() const{return L;} // retourne la longueur du pendule
-  double get_x() const{return P.get_coord(1);} // paramètre
+  double get_x() const{return P[0];} // paramètre
   virtual double get_angleNutation(bool degre=false) const override; // retourne l'angle de nutation
   virtual double get_angleRotPro(bool degre=false) const override; // retourne l'angle de rotation propre
 
@@ -163,39 +230,11 @@ private:
 };
 
 
-class Torsion : public Oscillateur{
-public:
-  //constructeur
-  explicit Torsion(const std::initializer_list<double>& liP={0},
-          const std::initializer_list<double>& liQ={0},
-          const Vecteur3D& a=Vecteur3D(1,0,0),
-          const Vecteur3D& O=Vecteur3D(0,0,0),
-          double frottement = 0.0,
-          double inertie = 1.0,
-          double C_torsion = 1.0,
-          SupportADessin* support=nullptr); /*construit un pendule de torsion avec paramètre, dérivée, axe, origine,
-                                              frottement, moment d'inertie, constante de torsion et un support à dessin.
-                                              Ce constructeur fait office de constructeur par défaut*/
-  // destructeur
-  virtual ~Torsion(){}
-  std::unique_ptr<Torsion> clone() const;
-  virtual std::unique_ptr<Oscillateur> copie() const override;
-  virtual void dessine() const override;
-  //autres fonctions
-  virtual Vecteur f(const double& t) const override; // fonction déterminante du mouvement
-  virtual std::ostream& affiche(std::ostream& sortie) const override; // permet d'afficher le vecteur par composants sur un flot de sortie
-  //accesseurs
-  double vitesse() const{return abs(Q.get_coord(1));} // vittesse
-  virtual double get_angleNutation(bool degre=false) const override; // angle de nutation
-  virtual double get_angleRotPro(bool degre=false) const override; // angle de rotation propre
-
-private:
-  //attributs
-  double I; // moment d'inertie
-  double C; // constante de torsion
-  double frott; // frottement
-};
-
+/*##############################################################################
+###                                                                          ###
+###                          CLASSE PenduleDouble                            ###
+###                                                                          ###
+##############################################################################*/
 
 class PenduleDouble : public Oscillateur{
 public:
@@ -215,7 +254,7 @@ public:
   //autres fonctions
   virtual Vecteur f(const double& t) const override; // fonction déterminante du mouvement
   Vecteur3D pos1() const; // position du premier pendule
-  double vit1() const{return abs(L1*Q.get_coord(1));} // vitesse du premier pendule
+  double vit1() const{return abs(L1*Q[0]);} // vitesse du premier pendule
   Vecteur3D pos2() const; // position du deuxième pendule
   double vit2() const; // vitesse du deuxième pendule
   virtual std::ostream& affiche(std::ostream& sortie) const override; // permet d'afficher le vecteur par composants sur un flot de sortie
@@ -234,6 +273,12 @@ private:
   double L2; // deuxième longueur
 };
 
+
+/*##############################################################################
+###                                                                          ###
+###                         CLASSE PenduleRessort                            ###
+###                                                                          ###
+##############################################################################*/
 
 class PenduleRessort : public Oscillateur{
 public:
@@ -254,7 +299,7 @@ public:
   //autres fonctions
   virtual Vecteur f(const double& t) const override; // fonction déterminante du mouvement
   Vecteur3D position() const; // retourne la position du pendule-ressort
-  double vitesse() const{return sqrt(pow(Q.get_coord(1),2)+pow(Q.get_coord(2),2));} // vitesse
+  double vitesse() const{return sqrt(pow(Q[0],2)+pow(Q[1],2));} // vitesse
   //accesseurs
   double get_L() const{return P.norme();}
   virtual double get_angleNutation(bool degre=false) const override;
@@ -267,30 +312,3 @@ private:
   double L; // longueur
   double k; // constante de raideur
 };
-
-/*class PendulesRelies : public Oscillateur{
-public:
-  //constructeur - destructeur
-  explicit PendulesRelies(const std::initializer_list<double>& liP={0,0},
-                          const std::initializer_list<double>& liQ={0,0},
-                          const Vecteur3D& a=Vecteur3D(1,0,0),
-                          const Vecteur3D& O=Vecteur3D(0,0,0),
-                          double masse1=1.0, double longueur1=1.0, double raideur=1.0,
-                          double masse2=1.0, double longueur2=1.0, double distance=1.0,
-                          double dist_accroche1, double dist_accroche2,
-                          SupportADessin* support=nullptr);
-  virtual ~PendulesRelies(){}
-
-  //autres fonctions
-  virtual Vecteur f(const double& t) const override;
-
-private:
-  double m1;
-  double m2;
-  double k;
-  double d;
-  double L1;
-  double L2;
-  double a1;
-  double a2;
-};*/

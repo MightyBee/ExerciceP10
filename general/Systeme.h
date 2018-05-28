@@ -13,8 +13,7 @@ class Systeme : public Dessinable {
     //destructeur
     virtual ~Systeme(){}
     //autres fonctions
-    void add(Oscillateur const& osc); //rajoute un oscillateur         //TODO methode remove ?
-    void initialize(); // initialise un système
+    void add(Oscillateur const& osc); //rajoute un oscillateur
     void evolue(double dt=0.1); // évolution du système par l'intégrateur
     const std::vector<std::unique_ptr<Oscillateur>>& get_col() const {return collection;}
     size_t taille() const{return collection.size();}

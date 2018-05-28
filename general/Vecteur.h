@@ -6,6 +6,12 @@
 #include <initializer_list>
 
 
+/*##############################################################################
+###                                                                          ###
+###                             CLASSE Vecteur                               ###
+###                                                                          ###
+##############################################################################*/
+
 class Vecteur {
 	public:
 		//constructeurs
@@ -24,17 +30,17 @@ class Vecteur {
 		Vecteur& operator/=(const double& lambda); // divise l'instance courante par un scalaire (double)
 
 		//accesseurs
-		double get_coord(unsigned int n) const; // accès à un paramètre
+		const double& operator[](unsigned int i) const; // accesseur, (i+1)ème coordonnée
 		size_t taille() const; // retourne la dim du vecteur
 
 		//manipulateurs
 		void augmente(double newCoord=0); // ajoute une dimension au vecteur et affecte une valeur pour cette dimension
-		void set_coord(unsigned int n, double newValeur); // modifie la n-ieme coordonnee du vecteur
+		double& operator[](unsigned int i); // accesseur et manipulateur, (i+1)ème coordonnée
 
 		//autres operations
-		std::ostream& affiche(std::ostream& sortie) const; // permet d'afficher le vecteur par composants sur un flot de sortie
 		double norme() const; // retourne la norme de l'instance courante
 		double norme2() const; // retourne la norme au carré de l'instance courante
+		std::ostream& affiche(std::ostream& sortie) const; // permet d'afficher le vecteur par composants sur un flot de sortie
 
 	protected:
 		//méthodes utilitaires
@@ -55,6 +61,12 @@ const Vecteur operator/(Vecteur v, double lambda); // division d'un vecteur par 
 const Vecteur operator~(Vecteur v); // retourne le vecteur unitaire : v/||v||
 
 
+/*##############################################################################
+###                                                                          ###
+###                            CLASSE Vecteur3D                              ###
+###                                                                          ###
+##############################################################################*/
+
 class Vecteur3D : public Vecteur{
 	public:
 		explicit Vecteur3D(double val);
@@ -64,14 +76,14 @@ class Vecteur3D : public Vecteur{
 
 		Vecteur3D operator^(const Vecteur3D& v2) const; // retourne le produit vectoriel de l'instance courante avec un autre vecteur 3D
 		Vecteur3D projXY() const; // retourne la projection du vecteur sur le plan XY
-		double angle(Vecteur3D const& v2) const;
+		double angle(Vecteur3D const& v2) const; // retourne l'angle entre un vecteur et l'instance courante
 
 		// accesseurs
 		double x() const{return coord[0];}
 		double y() const{return coord[1];}
 		double z() const{return coord[2];}
+
 	protected:
 		//méthodes utilitaires
 		virtual bool possible() const override; // retourne s'il est possible d'ahjouter une dimension au vecteur
-
 };
