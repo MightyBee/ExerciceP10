@@ -12,7 +12,7 @@
 
 class VueOpenGL : public SupportADessin {
  public:
-  // méthode(s) de dessin (héritée(s) de SupportADessin)
+  // méthodes de dessin (héritées de SupportADessin)
   virtual void dessine(Systeme const&) override;
   virtual void dessine(Pendule const&) override;
   virtual void dessine(Ressort const&) override;
@@ -21,16 +21,13 @@ class VueOpenGL : public SupportADessin {
   virtual void dessine(PenduleDouble const&) override;
   virtual void dessine(PenduleRessort const&) override;
 
-  virtual void phase(Oscillateur const&, Integrateur const&, double tFinal=10, double dt=0.01 ) override;
-
 
   // méthodes de (ré-)initialisation
   void init();
   void initializePosition();
 
   // méthode set
-  void setProjection(QMatrix4x4 const& projection)
-  { prog.setUniformValue("projection", projection); }
+  void setProjection(QMatrix4x4 const& projection){ prog.setUniformValue("projection", projection); }
 
   // Méthodes set
   void translate(double x, double y, double z);
@@ -42,20 +39,17 @@ class VueOpenGL : public SupportADessin {
   void dessineGrille(double hauteur = -3, double largeur = 5, int n=5, QMatrix4x4 const& point_de_vue = QMatrix4x4());
   void dessineCube(QMatrix4x4 const& point_de_vue = QMatrix4x4() );
   void dessineSphere(QMatrix4x4 const& point_de_vue, double rouge, double vert, double bleu);
-  void dessineSphere(QMatrix4x4 const& point_de_vue, double vit=0);
+  void dessineSphere(QMatrix4x4 const& point_de_vue, double vit=0); // colorie en fct du double vit
 
  private:
-  // Un shader OpenGL encapsulé dans une classe Qt
-  QOpenGLShaderProgram prog;
-  GLSphere sphere;
-
-  // Caméra
-  QMatrix4x4 matrice_vue;
-
-  // Quel type de dessin : cube ou sphere avec couleur en fct de la vitesse
-  bool vitesse=false;
+  //########## attributs ##########//
+  QOpenGLShaderProgram prog; // Un shader OpenGL encapsulé dans une classe Qt
+  GLSphere sphere; // pour pouvoir dessiner des sphères
+  QMatrix4x4 matrice_vue; // Caméra
+  bool vitesse=false; // Quel type de dessin : cube ou sphere avec couleur en fct de la vitesse
 };
 
-void angleEuler(double a, double b, double c, QMatrix4x4& matrice);
+// fonction externe (on ne va pas changer la classe QMatrix4x4 de la biliothèque)
+void angleEuler(double a, double b, double c, QMatrix4x4& matrice); // trois rotations successives selon les angles d'Euler
 
 #endif

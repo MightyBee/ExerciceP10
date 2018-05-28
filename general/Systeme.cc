@@ -3,15 +3,49 @@
 #include <string>
 using namespace std;
 
-//constructeur
+// constructeur
 Systeme::Systeme(SupportADessin* sup, Integrateur const& integrat, double t)
                 : Dessinable(sup), integrateur(integrat.copie()), temps(t), collection(0) {}
 
-// ajout d'un oscillateur
-void Systeme::add(Oscillateur const& osc){
-  collection.push_back(osc.copie());
-  collection.back()->set_sup(support);
+
+// pour savoir on veut afficher le portrait des phases du (i+1)ème oscillateur
+bool Systeme::getPhaseBool(unsigned int i) const{
+  if(i<collection.size()){
+    return collection[i]->getPhaseBool();
+  }
 }
+
+
+// ajout d'un oscillateur au système
+void Systeme::add(Oscillateur const& osc){
+  collection.push_back(osc.copie()); // copie polymorphique, on ajoute en vrai un unique_ptr<Oscillateur>
+  collection.back()->set_sup(support); // le système a un support à dessin, tous les oscillateurs doivent avoir le même
+}
+
+
+// permet de choisir parmis les trois intégrateurs implémentés
+void Systeme::changeIntegrateur(int i){
+  switch(i){
+    case 1: // méthode d'Euler-Cromer
+      integrateur.reset(new IntegrateurEulerCromer());
+      break;
+    case 2: // méthode de Newmark
+      integrateur.reset(new IntegrateurNewmark());
+      break;
+    case 3: // méthode de Runge-Kutta
+      integrateur.reset(new IntegrateurRungeKutta());
+      break;
+  }
+}
+
+
+// permet d'afficher/ne plus afficher le portrait des phases du (i+1)ème oscillateur
+void Systeme::changePhase(unsigned int i){
+  if(i<collection.size()){
+    collection[i]->changePhase();
+  }
+}
+
 
 // evolution du système avec l'intégrateur
 void Systeme::evolue(double dt){
@@ -22,39 +56,13 @@ void Systeme::evolue(double dt){
 }
 
 
+// méthode appelée pour dessiner un système (dessin s'adaptant au support)
 void Systeme::dessine() const{
   if(support!=nullptr){
     support->dessine(*this);
   }
 }
 
-void Systeme::phase() const{
-  if(support!=nullptr){
-    for(auto const& osc : collection){
-      support->phase(*osc, *integrateur);
-    }
-  }
-}
-
-void Systeme::phase(unsigned int n) const{
-  if(support!=nullptr and n>0 and n<=collection.size()){
-    support->phase(*collection[n-1], *integrateur);
-  }
-}
-
-void Systeme::changeIntegrateur(int i){
-  switch(i){
-    case 1:
-      integrateur.reset(new IntegrateurEulerCromer());
-      break;
-    case 2:
-      integrateur.reset(new IntegrateurNewmark());
-      break;
-    case 3:
-      integrateur.reset(new IntegrateurRungeKutta());
-      break;
-  }
-}
 
 // permet l'affichage d'un systeme de façon standardisée //
 ostream& Systeme::affiche(ostream& sortie) const{
@@ -66,6 +74,7 @@ ostream& Systeme::affiche(ostream& sortie) const{
   }
   return sortie;
 }
+
 
 
 

@@ -3,9 +3,11 @@
 
 #include <QOpenGLWidget>        // Classe pour faire une fenêtre OpenGL
 #include <QOpenGLShaderProgram> // Classe qui wrap les fonctions OpenGL liées aux shaders
-#include <QTime>            // Classe pour gérer le temps
+#include <QTime>                // Classe pour gérer le temps
 #include <array>
 #include <vector>
+#include <memory>
+#include <cmath>
 #include "vue_opengl.h"
 #include "Systeme.h"
 #include "Integrateur.h"
@@ -18,28 +20,30 @@
 ##############################################################################*/
 
 // fenêtre pour afficher le portrait des phases
-class PWidget : public QGLWidget
-{
+class PWidget : public QGLWidget{
 public:
-  PWidget(QWidget* parent = nullptr) : QGLWidget(parent) , phases(0), maxX(0), minX(0) {}
+  // constructeur(s)
+  PWidget(QWidget* parent = nullptr) : QGLWidget(parent) , phases(0), maxX(0), minX(0), maxY(0), minY(0) {}
+  // destructeur
   virtual ~PWidget() {}
-
-  void add(std::array<double,3> const& pqt);
+  // méthodes utilitaires publiques
+  void add(std::array<double,3> const& pqt); // ajoute un point dans l'espace des phases
 
 private:
   // Les 3 méthodes clés de la classe QOpenGLWidget à réimplémenter
   virtual void initializeGL()                  override;
   virtual void resizeGL(int width, int height) override;
   virtual void paintGL()                       override;
-  // méthodes utilitaires
-  double ratio() const {return width()/height();} // retourne le ration entre la largeur et la hauteur de la fenêtre
-  // attributs //
-  // Un shader OpenGL encapsulé dans une classe Qt
-  QOpenGLShaderProgram prog;
+  // méthodes utilitaires privées
+  double ratio() const {return (1.0*width())/(1.0*height());} // retourne le ratio entre la largeur et la hauteur de la fenêtre
 
+  //############## attributs ##############//
+  QOpenGLShaderProgram prog; // Un shader OpenGL encapsulé dans une classe Qt
   std::vector<std::array<double,3>> phases; // tableau contenant [P(t),P'(t),t] pour chaque t
-  double maxX;
-  double minX;
+  double maxX; // la valeur max sur l'axe des x
+  double minX; // la valeur min sur l'axe des x
+  double maxY; // la valeur max sur l'axe des y
+  double minY; // la valeur min sur l'axe des y
 };
 
 
@@ -49,72 +53,45 @@ private:
 ###                                                                          ###
 ##############################################################################*/
 
-// fenêtre principal pour l'affichage du système
-class GLWidget : public QGLWidget
-/* La fenêtre hérite de QGLWidget ;
+/* Fenêtre principale pour l'affichage du système ;
+ * la fenêtre hérite de QGLWidget ;
  * les événements (clavier, souris, temps) sont des méthodes virtuelles à redéfinir.
  */
-{
+class GLWidget : public QGLWidget{
 public:
+  // constructeur(s)
   GLWidget(Integrateur const& integrat, QWidget* parent = nullptr)
     : QGLWidget(parent) , s(&vue, integrat), phases(s.taille()) {}
+  GLWidget(const GLWidget&) =delete;
+  GLWidget& operator=(const GLWidget&) =delete;
+  // destructeur
   virtual ~GLWidget() {}
-
+  // méthodes utilitaires publiques
   void add(Oscillateur const& osc); // permet d'ajouter un oscillateur au système
+
 private:
   // Les 3 méthodes clés de la classe QGLWidget à réimplémenter
   virtual void initializeGL()                  override;
   virtual void resizeGL(int width, int height) override;
   virtual void paintGL()                       override;
-  virtual void closeEvent (QCloseEvent *event) override;
 
   // Méthodes de gestion d'évènements
   virtual void keyPressEvent(QKeyEvent* event) override;
   virtual void timerEvent(QTimerEvent* event)  override;
+  virtual void showEvent(QShowEvent* event)    override; // lorsque la fenêtre s'ouvre
+  virtual void closeEvent(QCloseEvent* event)  override; // lorsque la fenêtre se ferme
 
   // Méthodes de gestion interne
-  void pause();
-  void phase(int i, bool openAll = false, bool closeAll = false);
+  void pause(); // met en pause la simulation si elle tourne, et la relance si elle est en pause
+  void phase(unsigned int i, bool openAll = false, bool closeAll = false); // gestion ouverture/fermeture des fenêtres des phases et de l'attribut "phases"
 
-  // Vue : ce qu'il faut donner au contenu pour qu'il puisse se dessiner sur la vue
-  VueOpenGL vue;
+  //############## attributs ##############//
+  VueOpenGL vue; // Vue : ce qu'il faut donner au système pour qu'il puisse se dessiner sur la vue
+  int timerId; // Timer
+  QTime chronometre; // pour faire évoluer les objets avec le bon "dt"
 
-  // Timer
-  int timerId;
-  // pour faire évoluer les objets avec le bon "dt"
-  QTime chronometre;
-
-  // objets à dessiner, faire évoluer
-  Systeme s;
-  std::vector<std::unique_ptr<PWidget>> phases;
-
+  Systeme s; // système à dessiner, faire évoluer
+  std::vector<std::unique_ptr<PWidget>> phases; // collection de pointeurs sur des fenêtre pour dessiner l'espace des phases des oscillateurs du sytsème
 };
-
-
-class PhaseWidget : public QOpenGLWidget
-{
-public:
-  PhaseWidget(Oscillateur const& o, Integrateur const& i, double t=10.0, double dt=0.01, QWidget* parent = nullptr)
-    : QOpenGLWidget(parent), osc(o.copie()), integrat(i.copie()), tFinal(t), dt(dt) {}
-
-  virtual ~PhaseWidget() {}
-
-private:
-  // Les 3 méthodes clés de la classe QOpenGLWidget à réimplémenter
-  virtual void initializeGL()                  override;
-  virtual void resizeGL(int width, int height) override;
-  virtual void paintGL()                       override;
-
-
-
-  // Un shader OpenGL encapsulé dans une classe Qt
-  QOpenGLShaderProgram prog;
-  std::unique_ptr<Oscillateur> osc;
-  std::unique_ptr<Integrateur> integrat;
-  double tFinal;
-  double dt;
-};
-
-
 
 #endif // GLWIDGET_H

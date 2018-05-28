@@ -10,7 +10,7 @@ using namespace std;
 ###                                                                          ###
 ##############################################################################*/
 
-
+//copie polymorphique
 unique_ptr<IntegrateurEulerCromer> IntegrateurEulerCromer::clone() const{
   return unique_ptr<IntegrateurEulerCromer>(new IntegrateurEulerCromer(*this));
 }
@@ -29,8 +29,7 @@ void IntegrateurEulerCromer::evolue(Oscillateur& osc, double dt, double t) const
 ###                                                                          ###
 ##############################################################################*/
 
-
-
+//copie polymorphique
 unique_ptr<IntegrateurNewmark> IntegrateurNewmark::clone() const{
   return unique_ptr<IntegrateurNewmark>(new IntegrateurNewmark(*this));
 }
@@ -57,6 +56,7 @@ void IntegrateurNewmark::evolue(Oscillateur& osc, double dt, double t) const{
 ###                                                                          ###
 ##############################################################################*/
 
+//copie polymorphique
 unique_ptr<IntegrateurRungeKutta> IntegrateurRungeKutta::clone() const{
   return unique_ptr<IntegrateurRungeKutta>(new IntegrateurRungeKutta(*this));
 }

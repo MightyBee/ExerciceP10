@@ -10,27 +10,27 @@ Nous avons décidé de lancer une erreur, car c'est sûrement involontaire de vo
 R :
 Non, car le constructeur de copie par défaut est largement suffisant (pas besoin de copie profonde, une copie de surface suffit).
 
-[Question P4.2] Si l'on souhaitait ajouter un constructeur par coordonnées sphériques (deux angles et une longueur) pour les vecteurs de dimension 3, 
-    • a] que cela impliquerait-il au niveau des attributs de la classe ? 
-    • b] quelle serait la difficulté majeure (voire l'impossibilité) de sa réalisation en C++ ? (C'est d'ailleurs pour cela qu'on ne vous demande pas de faire un tel constructeur !) 
+[Question P4.2] Si l'on souhaitait ajouter un constructeur par coordonnées sphériques (deux angles et une longueur) pour les vecteurs de dimension 3,
+    • a] que cela impliquerait-il au niveau des attributs de la classe ?
+    • b] quelle serait la difficulté majeure (voire l'impossibilité) de sa réalisation en C++ ? (C'est d'ailleurs pour cela qu'on ne vous demande pas de faire un tel constructeur !)
 R :
 a] On pourrait juste garder le tableau dynamique de double mais il faudrait vérifier que l’on puisse ni ajouter ni supprimer une dimension au vecteur. Le constructeur transformerait alors les coordonnées polaires en coordonnées cartésiennes (car c’est la représentation interne que nous avons choisi) mais cela ne regarde pas l’utilisateur.
 b] Comme nous avons déjà un constructeur qui prend trois double en argument (constructeur par coordonnées cartésiennes), on ne pourrait pas surchargé deux fois le constructeur avec trois arguments de type double, cela créerait une ambiguïté. Par exemple pour Vecteur v(1.0,1.0,1.0), quel constructeur voudrions-nous appeler ?
 [Question P4.3] Quels opérateurs avez vous introduits ?
 R :
-Un opérateur externe ostream& operator<<(ostream&, const Vecteur&), qui appelle la méthode de la classe Vecteur affiche(ostream& sortie), pour laquelle nous avons juste changé son type de retour de void à ostream&. 
-Deux opérateur de comparaions : bool operator==(const Vecteur& v2) const et bool operator!=(const Vecteur& v2) const. 
+Un opérateur externe ostream& operator<<(ostream&, const Vecteur&), qui appelle la méthode de la classe Vecteur affiche(ostream& sortie), pour laquelle nous avons juste changé son type de retour de void à ostream&.
+Deux opérateur de comparaions : bool operator==(const Vecteur& v2) const et bool operator!=(const Vecteur& v2) const.
 
-[Question P6.1] Comment avez vous conçu votre classe Integrateur ? 
+[Question P6.1] Comment avez vous conçu votre classe Integrateur ?
 R :
 Un intégrateur est un objet qui transforme les oscillateurs, il n’a aucun attribut. Il a une méthode qui permet de faire evoluer un oscillateur passé en paramètre (par référence donc). C’est un peu la seule utilité d’un intégrateur donc c’est la seule méthode offerte à l’utilisateur.
-[Question P6.2] Quelle est la relation entre les classes Integrateur et IntegrateurEulerCromer ? 
+[Question P6.2] Quelle est la relation entre les classes Integrateur et IntegrateurEulerCromer ?
 R :
 Un intégrateur d’Euler-Cromer est clairement un intégrateur, donc IntegrateurEulerCromer est une classe héritée d’Integrateur.
 
-[Question P7.1] Comment se situent ces classes par rapport à la classe Oscillateur définie la semaine passée ? 
+[Question P7.1] Comment se situent ces classes par rapport à la classe Oscillateur définie la semaine passée ?
 R :
-Les classe Pendule et Ressort sont deux classes héritées de la super-classe Oscillateur. Ce sont des objets physiques qui se comportent comme des oscillateurs. 
+Les classe Pendule et Ressort sont deux classes héritées de la super-classe Oscillateur. Ce sont des objets physiques qui se comportent comme des oscillateurs.
 
 [Question P8.1] En termes de POO, quelle est donc la nature de la méthode dessine() ?
 R :
@@ -40,23 +40,23 @@ La méthode void dessine() const est une méthode virtuelle, car chaque objet de
 R :
 On a besoin d’une collection hétérogène : vector<Oscillateur*>, nous avons choisit des unique_ptr dans le cadre de notre projet (désallocation mémoire automatique et côté unique : un oscillateur donnéne peut appartenir qu’à un seul système). Notre classe Systeme a donc comme attribut (entre autres) vector<unique_ptr<Oscillateur>>.
 
-[Question P8.3] A quoi faut-il faire attention pour les classes contenant des pointeurs ? Quelles solutions peut-on envisager ? 
+[Question P8.3] A quoi faut-il faire attention pour les classes contenant des pointeurs ? Quelles solutions peut-on envisager ?
 R :
 Il faut faire attention à ce que le contenu pointé existe aussi longtemps que les pointeurs. C’est pourquoi nous avons choisi pour notre méthode void add(const Oscillateur&) de passer un Oscillateur par référence (constante) et puis d’allouer dynamiquement de la mémoire via une copie polymorphique de l’oscillateur passé en argument. Il n’est pas possible de détruire l’oscillateur ainsi créé par l’interface offert à l’utilisateur.
 Il faut aussi se poser la question du constructeur de copie (copie profonde?), de l’opérateur d’affectation et du destructeur. Nous avons décidé de supprimer les deux premiers, car un Systeme est un objet de taille conséquente qui n’a pas vraiement de raisons d’être copié. Pour le destructeur, les unique_ptr s’occupent de désallouer la place mémoire, donc pas besoin d’y toucher.
 
 [Question P8.4] Comment représentez vous la classe Systeme ?
-R : 
+R :
 Le système possède une collection (hétérogène) d’oscillateur, (vector<unique_ptr<Oscillateur>>) ainsi qu’un double représentant le temps, il est important de garder une trace du temps car certains oscillateurs (non implémentés ici) ont une méthode f() qui dépend du moment dans le temps (par exemple avec une force de contrainte non constante). De plus tous les oscillateurs du système sont repésentés dans la classe Systeme au même instant. Cette classe possède également un pointeur sur un intégrateur (unique_ptr<Integrateur>), plusieurs pointeur pourrait pointer sur le même intégrateur en soi, mais pour être sûr que l’intégrateur existe aussi longtemps que le système, nous allouons dynamiquement de l’espace mémoire pour l’integrateur lors de la construction du stystème et il est par la suite impossible de détruire celui-ci via l’interface. Comme chaque système aura donc son propre intégrateur, autant metre des unique_ptr pour que la désallocation se fasse automatiquement à la fin de vie du système.
 
 [Question P11.1] Comment représentez-vous ces nouveaux oscillateurs ? Où s'incrivent-ils dans votre conception ?
 R :
 Ces oscillateurs héritent directement de Oscillateur, ils sont considérés comme des nouvelles entités en soi (par exemple PenduleDouble n’héritent pas de Pendule,mais de Oscillateur).
 
-[Question P12.1] Comment implémentez-vous la possibilité de tracer les trajectoires dans l'espace des phases ? 
-R : 
-Par une question dans le terminal avant le lancement de la simulation pour le mode texte, et grâce aux touches «chiffre» du clavier pour le mode graphique : par exemple la touche 1 ouvre une nouvelle fenêtre avec le dessin (du premier oscillateur de la collection du styème) dans l’espace des phases qui « avance » en même temps que la simulation graphique, rappuyer sur la même touche ferme la fenêtre. Pour ouvrir les fenêtres de tous les oscillateurs, appuyer sur 0 (zéro) et pour toutes les fermer, appuyer sur O (comme dans open).
+[Question P12.1] Comment implémentez-vous la possibilité de tracer les trajectoires dans l'espace des phases ?
+R :
+À l'initialisation des oscillateurs, grâce à une méthode changePhase(), et grâce aux touches «chiffre» du clavier pour le mode graphique : par exemple la touche 1 ouvre une nouvelle fenêtre avec le dessin (du premier oscillateur de la collection du styème) dans l’espace des phases qui « avance » en même temps que la simulation graphique, rappuyer sur la même touche ferme la fenêtre. Pour ouvrir les fenêtres de tous les oscillateurs, appuyer sur 0 (zéro) et pour toutes les fermer, appuyer sur O (comme dans open).
 
-[Question P13.1] Où cela s'intègre-t-il dans votre projet/conception ? Quels changements cela engendre ? 
+[Question P13.1] Où cela s'intègre-t-il dans votre projet/conception ? Quels changements cela engendre ?
 R :
 Nous avons créé deux nouvelles classes héritées de Integrateur : IntegrateurNewmark et IntegrateurRungeKutta. Pour changer d’intégrateur dans la simulation graphique, il suffit d’appuyer sur F1 (EulerCromer), F2 (Newmark) ou F3 (RungeKutta).

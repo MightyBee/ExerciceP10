@@ -7,7 +7,7 @@ class Integrateur{
   public:
     // destructeur
     virtual ~Integrateur(){}
-
+    //copie polymorphique
     virtual std::unique_ptr<Integrateur> copie() const = 0;
     // autres méthodes
     virtual void evolue(Oscillateur& osc, double dt, double t) const = 0; // méthode qui fait évoluer l'intégrateur d'un pas de temps
@@ -18,10 +18,9 @@ class IntegrateurEulerCromer : public Integrateur{
   public:
     //destructeur
     virtual ~IntegrateurEulerCromer(){}
-
+    //copie polymorphique
     std::unique_ptr<IntegrateurEulerCromer> clone() const;
     virtual std::unique_ptr<Integrateur> copie() const override{return clone();}
-
     // autres méthodes
     virtual void evolue(Oscillateur& osc, double dt=0.1, double t=0) const override; // spécialisation de la méthode "evolue()" de la super-classe, avance d'un pas de temps avec la méthode d'intégration d'Euler-Cromer
 };
@@ -32,10 +31,9 @@ class IntegrateurNewmark : public Integrateur{
   public:
     //destructeur
     virtual ~IntegrateurNewmark(){}
-
+    //copie polymorphique
     std::unique_ptr<IntegrateurNewmark> clone() const;
     virtual std::unique_ptr<Integrateur> copie() const override{return clone();}
-
     // autres méthodes
     virtual void evolue(Oscillateur& osc, double dt=0.1, double t=0) const override; // spécialisation de la méthode "evolue()" de la super-classe, avance d'un pas de temps avec la méthode d'intégration de Newmark
 };
@@ -47,11 +45,9 @@ class IntegrateurRungeKutta : public Integrateur{
   public:
     //destructeur
     virtual ~IntegrateurRungeKutta(){}
-
+    //copie polymorphique
     std::unique_ptr<IntegrateurRungeKutta> clone() const;
     virtual std::unique_ptr<Integrateur> copie() const override{return clone();}
-
     // autres méthodes
     virtual void evolue(Oscillateur& osc, double dt=0.1, double t=0) const override; // spécialisation de la méthode "evolue()" de la super-classe, avance d'un pas de temps avec la méthode d'intégration de Runge-Kutta
-
 };

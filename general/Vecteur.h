@@ -17,6 +17,8 @@ class Vecteur {
 		//constructeurs
 		explicit Vecteur(const unsigned int& n=0, const double& val=0); // construit un vecteur de dimension n et fait office de constructeur par defaut
 		Vecteur(const std::initializer_list<double>& liste); // construit un vecteur à partir d'une liste de double
+		//destructeur
+		virtual ~Vecteur() {}
 
 		//operateurs internes
 		bool operator==(const Vecteur& v2) const; // retourne true si les vecteurs sont les memes, false sinon
@@ -69,10 +71,12 @@ const Vecteur operator~(Vecteur v); // retourne le vecteur unitaire : v/||v||
 
 class Vecteur3D : public Vecteur{
 	public:
+		// constructeurs
 		explicit Vecteur3D(double val);
-		explicit Vecteur3D(const Vecteur& v);
+		explicit Vecteur3D(const Vecteur& v); // construction d'un Vceteur3D à partir d'un Vecteur (de dim 3, il y a une vérification)
 		Vecteur3D(const double& x, const double& y, const double& z); // construit un vecteur 3D, avec valeurs x,y,z spécifiées
-
+		// destructeur
+		virtual ~Vecteur3D() {}
 
 		Vecteur3D operator^(const Vecteur3D& v2) const; // retourne le produit vectoriel de l'instance courante avec un autre vecteur 3D
 		Vecteur3D projXY() const; // retourne la projection du vecteur sur le plan XY

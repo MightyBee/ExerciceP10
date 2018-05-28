@@ -99,7 +99,7 @@ Vecteur& Vecteur::operator/=(const double& lambda){
 
 //##############################  accesseurs  ################################//
 const double& Vecteur::operator[](unsigned int i) const{
-	if(i>=0 and i<coord.size()){
+	if(i<coord.size()){
 		return coord[i];
 	}else{
 		Erreur err("dimension", "Vecteur::operator[](unsigned int) const",
@@ -125,7 +125,7 @@ bool Vecteur::possible() const{
 	return true;
 }
 
-// retourne une référence sur la n-ieme coordonnee du vecteur, permet de la modifier //
+// retourne une référence sur la (i+1)-ième coordonnee du vecteur, permet de la modifier //
 double& Vecteur::operator[](unsigned int i){
 	if(i>=0 and i<coord.size()){
 		return coord[i];
@@ -210,6 +210,7 @@ const Vecteur operator*(const Vecteur& v, const double& lambda){
 	return lambda*v;
 }
 
+
 // division d'un vecteur par un scalaire //
 const Vecteur operator/(Vecteur v, double lambda){
 	try{
@@ -221,11 +222,12 @@ const Vecteur operator/(Vecteur v, double lambda){
 	}
 }
 
+
 // retourne le vecteur unitaire : v/||v||
 const Vecteur operator~(Vecteur v){
 	try{
 		return v/v.norme();
-	}catch(Erreur err){
+	}catch(Erreur err){ // on catch l'erreur division par zéro pour la relancer
 		err.set_fct("operator~(Vecteur), i.e. vecteur unitaire");
 		err.set_dscrpt("Le vecteur nul n'a pas de vecteur unitaire correspondant.");
 		throw err;
@@ -262,6 +264,7 @@ bool Vecteur3D::possible() const{
 	}
 }
 
+
 // retourne le produit vectoriel du vecteur courant avec un autre vecteur 3D //
 Vecteur3D Vecteur3D::operator^(const Vecteur3D& v2) const{
 	return Vecteur3D((coord[1]*v2.coord[2])-(coord[2]*v2.coord[1]),
@@ -269,14 +272,17 @@ Vecteur3D Vecteur3D::operator^(const Vecteur3D& v2) const{
 									 (coord[0]*v2.coord[1])-(coord[1]*v2.coord[0]));
 }
 
+
+// retourne la projection du vecteur sur le plan XY
 Vecteur3D Vecteur3D::projXY() const{
 	return Vecteur3D(x(),y(),0);
 }
 
+
 // retourne l'angle en valeur absolue entre deux vecteur //
 double Vecteur3D::angle(Vecteur3D const& v2) const{
 	double angle(0);
-	Vecteur3D V1(~(*this));
+	Vecteur3D V1(~(*this)); // on les normalise pour que <·,·>=cos(angle)
 	Vecteur3D V2(~v2);
 	if(V1==-V2){angle=-M_PI;}
   else if(V1!=V2){

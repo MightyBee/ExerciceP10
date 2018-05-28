@@ -23,6 +23,4 @@ class SupportADessin{
   virtual void dessine(Chariot const&) = 0;
   virtual void dessine(PenduleDouble const&) = 0;
   virtual void dessine(PenduleRessort const&) = 0;
-
-  virtual void phase(Oscillateur const&, Integrateur const&,  double tFinal=10, double dt=0.01 ) = 0;
 };

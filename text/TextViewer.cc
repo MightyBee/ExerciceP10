@@ -32,13 +32,3 @@ void TextViewer::dessine(PenduleDouble const& pd){
 void TextViewer::dessine(PenduleRessort const& pr){
   sortie << pr << endl;
 }
-
-void TextViewer::phase(Oscillateur const& o, Integrateur const& integrat, double tFinal, double dt){
-  unique_ptr<Oscillateur> osc(o.copie());
-  sortie << "##### ESPACE DES PHASES ####" << endl;
-  for(double t(0.0); t<=tFinal;t+=dt){
-    sortie << osc->PQ() << endl;
-    integrat.evolue(*osc,dt,t);
-  }
-  sortie << endl;
-}

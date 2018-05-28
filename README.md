@@ -1,6 +1,6 @@
 -Le projet a été fait en entier. Nous avons fait tous les problèmes donnés de manière hebdommadaire.
 
--Oui, nous avons une version graphique avec la bibliothèque Qt WxWidget.
+-Oui, nous avons une version graphique avec la bibliothèque Qt, QOpenGLWidget.
 
 -Nous estimons que le temps consacré individuellement au projet est de 3h par semaine.
 
@@ -23,17 +23,23 @@ Description du programme:
 
  Pour utiliser le mode graphique, il faut:
       1) aller dans le fichier main_qt_gl.cc
-      2) dans le main initialiser les oscillateurs voulus en consultant les différents constructeurs
-      3) les ajouter avec la méthode add (avec la sytaxe w.add(Oscillateur_voulu);)
-
-Pour compiler le mode graphique il faut:
-      1) aller dans le dossier Qt_GL et exécuter qmake puis make
-
-//IL ME SEMBLE QUE C'EST COMME CA POUR GRAPHIQUE
-
+      2) déclarer l'intégrateur que l'on souhaite utilisé
+      3) initialiser un objet GLWidget w(integrateur)
+      4) initialiser les oscillateurs voulus en consultant les différents constructeurs
+      5) les ajouter avec la méthode de GLWidget add (avec la sytaxe w.add(Oscillateur_voulu);)
+      6) montrer la fenêtre : w.show();
+      
 Pour utiliser le mode texte, il faut:
-      //AUCUNE IDEE J'UTILISE PAS LE MODE TEXTE
-Pour compiler le mode texte, il faut:
+      1) aller dans le fichier main_text.cc
+      2) initialiser un flot de sortie et un intégrateur
+      3) initialiser un système (Systeme s(&flot, integrateur);)
+      4) initialiser les oscillateurs voulus en consultant les différents constructeurs
+      5) les ajouter avec la méthode de Systeme add (avec la sytaxe s.add(Oscillateur_voulu);)
+      6) faire evoluer le systeme avec s.evolue(dt);
+      7) afficher sur le flor de sortie : s.dessine();
+    
+Pour compiler, il faut:
+	 1) aller dans le dossier Qt_GL et exécuter qmake puis make
 
 
  Nous sommes fiers d'être parvenus au bout du projet, qui était conséquent pour nous. La partie

@@ -1,6 +1,1 @@
-simulation mode texte : vérifier (et phases)
-ERREUR
-constr de copie et op d'affection : les supprimer dans Systeme
-les destructeurs en général
 copie profonde avec les pointeurs ?
-operator[]
