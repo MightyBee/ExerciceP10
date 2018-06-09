@@ -89,10 +89,10 @@ void PWidget::paintGL(){
 // permet d'ajouter un point dans l'espace des phases
 void PWidget::add(std::array<double,3> const& pqt){
   if(phases.empty()){ // si le tableau des phases est vide, on initialise les min et max
-    maxX=pqt[0];
-    minX=pqt[0];
-    maxY=pqt[1];
-    minY=pqt[1];
+    maxX=pqt[0]+0.001;
+    minX=pqt[0]-0.001;
+    maxY=pqt[1]+0.001;
+    minY=pqt[1]-0.001;
   } else { // sinon, on met a jour les min et max
     if(phases.size()>=1000000) phases.erase(phases.begin()); // on met une limite a la taille du tableau
     if(pqt[0]>maxX) maxX=pqt[0];
@@ -175,8 +175,8 @@ void GLWidget::closeEvent (QCloseEvent* event){
 // ======================================================================
 // gère les événements clavier
 void GLWidget::keyPressEvent(QKeyEvent* event){
-  constexpr double petit_angle(5.0); // en degrés
-  constexpr double petit_pas(1.0);
+  constexpr double petit_angle(1.0); // en degrés
+  constexpr double petit_pas(0.1);
 
   switch (event->key()) {
 
@@ -322,13 +322,13 @@ void GLWidget::phase(unsigned int i, bool openAll, bool closeAll){
     }
 
     if(phases[i]!=nullptr and not openAll){ // si la fenêtre est affichée (sinon elle aurait prise par le if précédent) et qu'on ne veut pas tout ouvrir
-      s.changePhase(i);
       phases[i]->hide();
       phases[i].reset(nullptr);
-    } else if(phases[i]==nullptr and not closeAll){ // pour ouvrir une nouvelle fenêtre
       s.changePhase(i);
+    } else if(phases[i]==nullptr and not closeAll){ // pour ouvrir une nouvelle fenêtre
       phases[i].reset(new PWidget());
       phases[i]->show();
+      s.changePhase(i);
     }
     // note : on appelle les méthode hide() et show() de PWidget via les pointeurs seulement lorsqu'on est sûr que ce ne sont pas des pointeurs nuls
   }

@@ -186,6 +186,7 @@ void Pendule::dessine() const{
   }
 }
 
+
 /*##############################################################################
 ###                                                                          ###
 ###                    METHODES DE LA CLASSE Ressort                         ###
@@ -259,6 +260,59 @@ void Ressort::dessine() const{
     support->dessine(*this);
   }
 }
+
+
+/*##############################################################################
+###                                                                          ###
+###                    METHODES DE LA CLASSE RessortForce                    ###
+###                                                                          ###
+##############################################################################*/
+
+//constructeur
+RessortForce::RessortForce(const initializer_list<double>& liP,
+                           const initializer_list<double>& liQ,
+                           const Vecteur3D& a, const Vecteur3D& O,
+                           double k,double m, double frot, double A,
+                           double w, bool phase, SupportADessin* support)
+                         : Ressort(liP,liQ,a,O,k,m,frot,phase,support),
+                           amplitude(A),w(w)
+                         { if(P.taille()!=1){
+                             Erreur err("initialisation RessortForce", "RessortForce::RessortForce(const initializer_list<double>&, const initializer_list<double>&, const Vecteur3D&, const Vecteur3D&, double, double, double, double, double, bool, SupportADessin*)",
+                                        "Le ressort doit avoir un seul paramètre (et sa dérivée temporelle) : la distance à la position d'équilibre (et sa vitesse). Ici : "+to_string(P.taille())+"paramètre(s).");
+                             throw err;
+                           }
+                         }
+
+unique_ptr<RessortForce> RessortForce::clone() const{
+  return unique_ptr<RessortForce>(new RessortForce(*this));
+}
+
+unique_ptr<Oscillateur> RessortForce::copie() const{
+  return clone();
+}
+
+//fonction d'évolution
+Vecteur RessortForce::f(const double& t) const{
+  Vecteur retour({(-(k/m)*P[0]-(frott/m)*Q[0]+g*a+(amplitude/m)*cos(w*t))});
+  return retour;
+}
+
+// permet l'affichage d'un oscillateur de façon standardisée //
+ostream& RessortForce::affiche(ostream& sortie) const{
+  sortie << "# RessortForce :" << endl;
+  sortie << P << " # parametre (distance de l'origine)" << endl;
+  sortie << Q << " # vitesse" << endl;
+  sortie << position() << "# position" << endl;
+  if(phase) sortie << PQ() << " # phase" << endl;
+  return sortie;
+}
+
+void RessortForce::dessine() const{
+  if(support!=nullptr){
+    support->dessine(*this);
+  }
+}
+
 
 /*##############################################################################
 ###                                                                          ###

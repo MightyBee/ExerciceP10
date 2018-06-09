@@ -279,8 +279,8 @@ void VueOpenGL::init(){
 void VueOpenGL::initializePosition(){
   // position initiale
   matrice_vue.setToIdentity();
-  rotate(-38.66,0,0,1);
-  rotate(-65,1,0,0);
+  //rotate(-38.66,0,0,1);
+  rotate(-90,1,0,0);
   translate(0.0, 0.0, -4.0);
 }
 

@@ -135,12 +135,51 @@ public:
   virtual std::ostream& affiche(std::ostream& sortie) const override; // permet d'afficher le ressort (P,Q,position,...) sur un flot de sortie
   virtual void dessine() const override; // méthode appelée pour dessiner un ressort ("dessin" différent selon son support à dessin)
 
-private:
+protected:
   //########## attributs ##########//
   double m; // masse du ressort
   double k; // constante de raideur
   double frott; // constante de frottement
 };
+
+
+
+/*##############################################################################
+###                                                                          ###
+###                           CLASSE RessortForce                            ###
+###                                                                          ###
+##############################################################################*/
+
+class RessortForce :public Ressort{
+public:
+  //constructeur
+  explicit RessortForce(const std::initializer_list<double>& liP={0.0},
+                        const std::initializer_list<double>& liQ={0.0},
+                        const Vecteur3D& a=Vecteur3D(1.0,0.0,0.0),
+                        const Vecteur3D& O=Vecteur3D(0.0,0.0,0.0),
+                        double k=1.0, double m=1.0,
+                        double frot=0.0, double A=1.0,
+                        double w=1.0, bool phase=false,
+                        SupportADessin* support=nullptr); /* construit un ressort  forcé avec son paramètre, la dérivée du paramètre,
+                                                          son axe, son origine, sa constante de raideur, sa masse, un coefficient de Frottement,
+                                                          l'amplitude de la force extérieure, sa fréquence et un support à dessin.
+                                                          Ce constructeur fait office de constructeur par défaut */
+  //destructeur
+  virtual ~RessortForce(){}
+  //copie polymorphique
+  std::unique_ptr<RessortForce> clone() const;
+  virtual std::unique_ptr<Oscillateur> copie() const override;
+  //autres méthodes
+  virtual Vecteur f(const double& t) const override; // fonction déterminante du mouvement du ressort
+  virtual std::ostream& affiche(std::ostream& sortie) const override; // permet d'afficher le ressort (P,Q,position,...) sur un flot de sortie
+  virtual void dessine() const override;
+
+private:
+  //########## attributs ##########//
+  double amplitude;
+  double w;
+};
+
 
 
 /*##############################################################################
