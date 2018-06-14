@@ -1,6 +1,7 @@
 #pragma once
 #include <initializer_list>
 #include <memory>
+#include <list>
 #include "Vecteur.h"
 #include "Dessinable.h"
 
@@ -35,6 +36,7 @@ class Oscillateur : public Dessinable {
     virtual double get_anglePrecession(bool degre=false) const; // retourne l'angle de précession
     virtual double get_angleNutation(bool degre=false) const = 0; // retourne l'angle de nutation
     virtual double get_angleRotPro(bool degre=false) const = 0; // retourne l'angle de rotation propre
+    virtual Vecteur3D position() const = 0;
     //manipulateurs
     void set_P(const Vecteur& p); // permet de modifier l'intégralité des paramètres
     void set_P(unsigned int n, double newValeur); // permet de modifier un des paramètre
@@ -56,6 +58,17 @@ class Oscillateur : public Dessinable {
 
 std::ostream& operator<<(std::ostream& sortie, const Oscillateur& osc); // permet l'affichage standard : sortie << oscillateur;
 
+
+class QueueOscillateur {
+  public:
+    QueueOscillateur() : taille(0), queue() {}
+    QueueOscillateur(Vecteur3D v) : taille(1), queue(1,v) {}
+    void ajoute(Vecteur3D v);
+    const std::list<Vecteur3D>& get_list() const;
+  private:
+    size_t taille;
+    std::list<Vecteur3D> queue;
+};
 
 /*##############################################################################
 ###                                                                          ###
@@ -83,7 +96,7 @@ public:
   //accesseurs
   virtual double get_angleNutation(bool degre=false) const override; // retourne l'angle de nutation
   virtual double get_angleRotPro(bool degre=false) const override; // retourne l'angle de rotation propre
-  Vecteur3D position() const; // retourne le vecteur3d indiquant la position du pendule dans l'espace
+  virtual Vecteur3D position() const override; // retourne le vecteur3d indiquant la position du pendule dans l'espace
   double vitesse() const{return abs(L*Q[0]);} // retourne la vitesse (pas la dérivée du paramètre, la "vraie" vitesse de déplacement dans l'espace)
   double get_L() const{return L;} // retourne la longueur du pendule
   //autres méthodes
@@ -127,7 +140,7 @@ public:
   //accesseurs
   virtual double get_angleNutation(bool degre=false) const override; // retourne l'angle de nutation
   virtual double get_angleRotPro(bool degre=false) const override; // retourne l'angle de rotation propre
-  Vecteur3D position() const; // retourne la position du ressort
+  virtual Vecteur3D position() const override; // retourne la position du ressort
   double vitesse() const{return abs(Q[0]);} // retourne la vitesse
   double get_x() const{return P[0];} // retourne le paramètre
   //autres méthodes
@@ -208,6 +221,7 @@ public:
   //accesseurs
   virtual double get_angleNutation(bool degre=false) const override; // angle de nutation
   virtual double get_angleRotPro(bool degre=false) const override; // angle de rotation propre
+  virtual Vecteur3D position() const override {return O;}
   double vitesse() const{return abs(Q[0]);} // retourne la vitesse angulaire
   //autres méthodes
   virtual Vecteur f(const double& t) const override; // fonction déterminante du mouvement
@@ -249,6 +263,7 @@ public:
   //accesseurs
   virtual double get_angleNutation(bool degre=false) const override; // retourne l'angle de nutation
   virtual double get_angleRotPro(bool degre=false) const override; // retourne l'angle de rotation propre
+  virtual Vecteur3D position() const override {return posP();}                         /// TODO
   Vecteur3D posC()const; // position du chariot
   Vecteur3D posP()const; // position du pendule
   double vitC() const{return abs(Q[0]);} // retourne la vitesse du chariot (pas la dérivée du 1er paramètre, la "vraie" vitesse de déplacement dans l'espace)
@@ -298,6 +313,7 @@ public:
   virtual double get_angleNutation(bool degre=false) const override; // premier angle de nutation
   double get_angleNutation2(bool degre=false) const; // deuxième angle de nutation
   virtual double get_angleRotPro(bool degre=false) const override; // angle de rotation propre
+  virtual Vecteur3D position() const override {return pos2();}                         /// TODO
   Vecteur3D pos1() const; // position du premier pendule
   Vecteur3D pos2() const; // position du deuxième pendule
   double vit1() const{return abs(L1*Q[0]);} // retourne la vitesse du 1er pendule (pas la dérivée du 1er paramètre, la "vraie" vitesse de déplacement dans l'espace)
@@ -346,7 +362,7 @@ public:
 //accesseurs
   virtual double get_angleNutation(bool degre=false) const override;
   virtual double get_angleRotPro(bool degre=false) const override;
-  Vecteur3D position() const; // retourne la position du pendule-ressort
+  virtual Vecteur3D position() const override; // retourne la position du pendule-ressort
   double vitesse() const{return sqrt(pow(Q[0],2)+pow(Q[1],2));} // retourne la vitesse (pas la dérivée du paramètre, la "vraie" vitesse de déplacement dans l'espace)
   double get_L() const{return P.norme();}
   //autres méthodes

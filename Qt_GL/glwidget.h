@@ -61,7 +61,7 @@ class GLWidget : public QGLWidget{
 public:
   // constructeur(s)
   GLWidget(Integrateur const& integrat, QWidget* parent = nullptr)
-    : QGLWidget(parent) , s(&vue, integrat), phases(s.taille()) {}
+    : QGLWidget(parent) , s(&vue, integrat), showQueues(false), queues(s.taille()), phases(s.taille()) {}
   GLWidget(const GLWidget&) =delete;
   GLWidget& operator=(const GLWidget&) =delete;
   // destructeur
@@ -91,6 +91,8 @@ private:
   QTime chronometre; // pour faire évoluer les objets avec le bon "dt"
 
   Systeme s; // système à dessiner, faire évoluer
+  bool showQueues;
+  std::vector<QueueOscillateur> queues;
   std::vector<std::unique_ptr<PWidget>> phases; // collection de pointeurs sur des fenêtre pour dessiner l'espace des phases des oscillateurs du sytsème
 };
 

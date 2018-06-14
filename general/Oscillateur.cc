@@ -111,6 +111,24 @@ ostream& operator<<(ostream& sortie, const Oscillateur& osc){
 }
 
 
+
+
+
+
+void QueueOscillateur::ajoute(Vecteur3D v){
+  if(taille>=100){
+    queue.pop_front();
+    taille--;
+  }
+  queue.push_back(v);
+  taille++;
+}
+
+const list<Vecteur3D>& QueueOscillateur::get_list() const{
+  return queue;
+}
+
+
 /*##############################################################################
 ###                                                                          ###
 ###                    METHODES DE LA CLASSE Pendule                         ###

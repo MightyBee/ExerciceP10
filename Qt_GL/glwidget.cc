@@ -119,6 +119,7 @@ void PWidget::add(std::array<double,3> const& pqt){
 // permet d'ajouter un oscillateur au système
 void GLWidget::add(Oscillateur const& osc){
   s.add(osc);
+  queues.push_back(QueueOscillateur(osc.position()));
   phases.push_back(nullptr); // on oublie pas d'ajouter une "case" à la collection gérant les fenêtres des phases
 }
 
@@ -154,6 +155,11 @@ void GLWidget::resizeGL(int width, int height){
 void GLWidget::paintGL(){
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   s.dessine();
+  if(showQueues){
+    for(size_t i(0);i<queues.size();i++){
+      vue.dessineQueue(queues[i],i);
+    }
+  }
 }
 
 // ======================================================================
@@ -220,7 +226,7 @@ void GLWidget::keyPressEvent(QKeyEvent* event){
     vue.rotate(petit_angle, 0.0, 0.0, +1.0);
     break;
   case Qt::Key_Home:
-    vue.initializePosition();
+    vue.changeVue(-1); //remet a la position initiale
     break;
 
   // pause ou reprise
@@ -242,6 +248,17 @@ void GLWidget::keyPressEvent(QKeyEvent* event){
   // change dessin : cube ou sphère colorée
   case Qt::Key_V:
     vue.changeDessin();
+    break;
+
+  // montrer ou non les trainées des oscillateurs
+  case Qt::Key_L:
+    if(showQueues) showQueues=false;
+    else showQueues=true;
+    break;
+
+  // change vue : vue 1ère ou 3ème personne
+  case Qt::Key_Tab:
+    vue.changeVue(s.taille());
     break;
 
   // gestion portraits des phases
@@ -291,6 +308,9 @@ void GLWidget::timerEvent(QTimerEvent* event){
   s.evolue(dt); // évolution du système
   for(size_t i(0);i<phases.size();i++){ // pour le dessin des phases, ajoute un point au portrait a chaque "evolution" du système
     if(phases[i]!=nullptr) phases[i]->add({s.get_col()[i]->PQ()[0],s.get_col()[i]->PQ()[1],0});
+  }
+  for(size_t i(0);i<queues.size();i++){ // pour le dessin des trainees, ajoute un point au portrait a chaque "evolution" du système
+    queues[i].ajoute(s.get_col()[i]->position());
   }
   updateGL();
 }

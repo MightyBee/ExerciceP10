@@ -33,10 +33,13 @@ class VueOpenGL : public SupportADessin {
   void translate(double x, double y, double z);
   void rotate(double angle, double dir_x, double dir_y, double dir_z);
   void changeDessin(); // change le bool vitesse
+  void changeVue(int taille); // change le int fpv
 
   // méthode utilitaire offerte pour simplifier
+  void dessineQueue(const QueueOscillateur& queuem, size_t i);
   void dessineAxes(QMatrix4x4 const& point_de_vue = QMatrix4x4(), bool en_couleur = true);
-  void dessineGrille(double hauteur = -3, double largeur = 5, int n=5, QMatrix4x4 const& point_de_vue = QMatrix4x4());
+  void dessineGrille(double hauteur = -3, double largeur = 5, int n=5, double rouge=0.25, double vert=0.25, double bleu=0.25, QMatrix4x4 const& point_de_vue = QMatrix4x4());
+  void dessinePiece();
   void dessineCube(QMatrix4x4 const& point_de_vue = QMatrix4x4() );
   void dessineSphere(QMatrix4x4 const& point_de_vue, double rouge, double vert, double bleu);
   void dessineSphere(QMatrix4x4 const& point_de_vue, double vit=0); // colorie en fct du double vit
@@ -47,6 +50,8 @@ class VueOpenGL : public SupportADessin {
   GLSphere sphere; // pour pouvoir dessiner des sphères
   QMatrix4x4 matrice_vue; // Caméra
   bool vitesse=false; // Quel type de dessin : cube ou sphere avec couleur en fct de la vitesse
+  int fpvOsc=-1;
+  bool fpvCam=false;
 };
 
 // fonction externe (on ne va pas changer la classe QMatrix4x4 de la biliothèque)
